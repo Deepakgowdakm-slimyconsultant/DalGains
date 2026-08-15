@@ -1,0 +1,51 @@
+{
+  "recipe_id": "poha_west",
+  "name": "Poha",
+  "aliases": [
+    "pohe",
+    "avalakki"
+  ],
+  "ingredients": [
+    {
+      "ingredient_id": "A011",
+      "qty": 60.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "G017",
+      "qty": 15.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "G033",
+      "qty": 1.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "H012",
+      "qty": 10.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "G008",
+      "qty": 3.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "G009",
+      "qty": 2.0,
+      "unit": "g"
+    }
+  ],
+  "oil_ghee": {
+    "type": "oil",
+    "qty_g": 6.0
+  },
+  "servings": 1,
+  "region_tag": "west",
+  "meal_type": "breakfast",
+  "is_fasting_safe": false,
+  "tags": [],
+  "created_by": "system",
+  "notes": "Raw/dry ingredient weights per serving. 1 plate ≈ 260-380 kcal."
+}
