@@ -22,16 +22,26 @@ KCAL_PER_G_PROTEIN = 4
 KCAL_PER_G_FAT = 9
 KCAL_PER_G_CARBS = 4
 
+# Floors implausible/negative BMR from extreme-but-schema-valid inputs (e.g.
+# UserProfile technically allows age=120 + weight_kg=10 together, which
+# Mifflin-St Jeor alone drives negative). 600 is chosen with margin: it
+# keeps compute_calorie_target's cutting-vs-maintenance ordering strictly
+# correct even at the lowest activity multiplier (sedentary, 1.2x) --
+# see tests/test_tdee_hypothesis.py.
+MIN_BMR_KCAL = 600.0
+
 
 def calculate_bmr(age: int, sex: str, height_cm: float, weight_kg: float) -> float:
-    """Mifflin-St Jeor BMR. sex is 'male' or 'female'."""
+    """Mifflin-St Jeor BMR, floored at MIN_BMR_KCAL. sex is 'male' or 'female'."""
     sex = sex.lower()
     base = 10 * weight_kg + 6.25 * height_cm - 5 * age
     if sex == "male":
-        return base + 5
-    if sex == "female":
-        return base - 161
-    raise ValueError(f"sex must be 'male' or 'female', got {sex!r}")
+        bmr = base + 5
+    elif sex == "female":
+        bmr = base - 161
+    else:
+        raise ValueError(f"sex must be 'male' or 'female', got {sex!r}")
+    return max(bmr, MIN_BMR_KCAL)
 
 
 def calculate_tdee(bmr: float, activity_level: str) -> float:
