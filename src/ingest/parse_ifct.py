@@ -10,6 +10,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.ingest.manual_ingredients import SUPPLEMENT_INGREDIENTS
+
 RAW_DIR = Path(__file__).resolve().parents[2] / "data" / "raw" / "ifct2017"
 OUT_PATH = Path(__file__).resolve().parents[2] / "data" / "processed" / "ingredients.parquet"
 
@@ -29,6 +31,39 @@ MANUAL_ALIASES = {
     "B001": ["chana dal", "bengal gram dal"],
     "T013": ["ghee", "clarified butter"],
     "A015": ["chawal", "white rice", "cooked rice"],
+    # Generic fruit names -> one representative IFCT cultivar, so callers
+    # (e.g. build_juice) can look foods up by the name people actually say.
+    "E037": ["mango"],  # Mango, ripe, gulabkhas
+    "E009": ["banana"],  # Banana, ripe, montham
+    "E047": ["orange"],  # Orange, pulp
+    "E001": ["apple"],  # Apple, big
+}
+
+# Maps IFCT's own food-group names (compositions.csv "grup" column) onto
+# schemas.IngredientCategory. Mushrooms and "Miscellaneous Foods" don't map
+# cleanly onto any category -- flagged as a starting point, not a finished
+# taxonomy; revisit if a future ingredient needs a sharper bucket.
+GROUP_TO_CATEGORY = {
+    "Cereals and Millets": "grain",
+    "Grain Legumes": "dal",
+    "Green Leafy Vegetables": "vegetable",
+    "Other Vegetables": "vegetable",
+    "Fruits": "fruit",
+    "Roots and Tubers": "vegetable",
+    "Condiments and Spices": "spice",
+    "Nuts and Oil Seeds": "nut_seed",
+    "Sugars": "sweetener",
+    "Mushrooms": "vegetable",
+    "Miscellaneous Foods": "other",
+    "Milk and Milk Products": "dairy",
+    "Egg and Egg Products": "egg",
+    "Poultry": "meat",
+    "Animal Meat": "meat",
+    "Marine Fish": "fish",
+    "Marine Shellfish": "fish",
+    "Marine Mollusks": "fish",
+    "Fresh Water Fish and Shellfish": "fish",
+    "Edible Oils and Fats": "oil_fat",
 }
 
 _LANG_PREFIX_RE = re.compile(r"^(?:[A-Za-z]{1,4}\.,?\s*)+")
@@ -112,6 +147,9 @@ def parse() -> pd.DataFrame:
         else:
             energy_kcal = raw_enerc_kj / KJ_PER_KCAL
 
+        group_name = str(row["grup"]).strip()
+        category = GROUP_TO_CATEGORY.get(group_name, "other")
+
         records.append(
             {
                 "ingredient_id": code,
@@ -123,6 +161,7 @@ def parse() -> pd.DataFrame:
                 "carbs_g_per_100g": carbs_g,
                 "fiber_g_per_100g": float(row["fibtg"]),
                 "source": "IFCT",
+                "category": category,
             }
         )
 
@@ -130,10 +169,16 @@ def parse() -> pd.DataFrame:
 
 
 def main() -> None:
-    df = parse()
+    ifct_df = parse()
+    supplement_df = pd.DataFrame.from_records(SUPPLEMENT_INGREDIENTS)
+    df = pd.concat([ifct_df, supplement_df], ignore_index=True)
+
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(OUT_PATH, index=False)
-    print(f"Wrote {len(df)} ingredients to {OUT_PATH}")
+    print(
+        f"Wrote {len(df)} ingredients to {OUT_PATH} "
+        f"({len(ifct_df)} IFCT + {len(supplement_df)} USDA/MANUAL supplement)"
+    )
 
 
 if __name__ == "__main__":
