@@ -48,6 +48,14 @@ def load_recipe(recipe_id: str) -> Recipe:
     return Recipe(**data)
 
 
+def delete_recipe(recipe_id: str) -> None:
+    """Removes a persisted recipe. Raises FileNotFoundError if it doesn't exist."""
+    path = RECIPES_DIR / f"{recipe_id}.json"
+    if not path.exists():
+        raise FileNotFoundError(f"No recipe {recipe_id!r} at {path}")
+    path.unlink()
+
+
 def compute_nutrition(
     recipe: Recipe,
     servings: float = 1,

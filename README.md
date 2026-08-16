@@ -32,8 +32,23 @@ See [CLAUDE.md](./CLAUDE.md) for full project rules and conventions.
 
 ## Status
 
-Phase 2: pydantic schema layer, recipe builder, beverages, body-type/
-eating-phase/fasting planning, household unit calibration.
+Phase 3: household-unit-aware recipe math, meal logging + persistence,
+an insights/recommendations engine, a FastAPI service layer, and design
+tokens + i18n scaffolding for the frontend to come in Phase 4.
+
+## Security posture (current)
+
+**The API (`src/api/`) has no authentication or authorization.** Any
+request that reaches it can read or write any user's profile, logs, or
+calibrations. This is intentional for now, not an oversight: DalGains is
+a local-first, single-household app (see CLAUDE.md's engineering
+conventions), and the API is meant to be run on `localhost` for a local
+frontend to talk to — not exposed on a public network or shared hosting.
+
+If a future phase adds multi-household or remote access, authentication
+must be added before the API is reachable from anywhere but localhost.
+Don't assume auth exists just because routes are scoped by `user_id` in
+the URL — that's a routing convenience, not access control.
 
 ## License
 

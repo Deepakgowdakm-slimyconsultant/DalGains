@@ -56,6 +56,11 @@ def _load_calibrations(user_id: str) -> dict[str, dict]:
     return json.loads(path.read_text())
 
 
+def get_calibrations(user_id: str) -> dict[str, HouseholdUnit]:
+    """All of a user's own unit calibrations (not the defaults)."""
+    return {name: HouseholdUnit(**entry) for name, entry in _load_calibrations(user_id).items()}
+
+
 def calibrate_unit(
     user_id: str, unit_name: str, volume_ml: float, method: CalibrationMethod
 ) -> HouseholdUnit:

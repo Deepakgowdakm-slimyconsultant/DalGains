@@ -31,3 +31,11 @@ def load_profile(user_id: str) -> Optional[UserProfile]:
     if not path.exists():
         return None
     return UserProfile(**json.loads(path.read_text()))
+
+
+def delete_profile(user_id: str) -> None:
+    """Removes a persisted profile. Raises FileNotFoundError if it doesn't exist."""
+    path = _profile_path(user_id)
+    if not path.exists():
+        raise FileNotFoundError(f"No profile for {user_id!r}")
+    path.unlink()

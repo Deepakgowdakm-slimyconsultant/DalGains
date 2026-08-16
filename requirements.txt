@@ -3,3 +3,6 @@ pyarrow
 pytest
 pydantic
 hypothesis
+fastapi
+uvicorn
+httpx
