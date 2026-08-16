@@ -11,9 +11,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.api.routes import beverages, ingredients, insights, logs, profile, units
 from src.api.routes import recipes as recipes_routes
 from src.core.ingredients import load_ingredients
+from src.i18n.loader import load_all_locales
 from src.recipes.builder import list_recipes
 
 APP_VERSION = "0.3.0"  # Phase 3
+
+# "On app start, assert every key in en.json exists in hi.json and
+# kn.json" (Phase 3 brief) -- runs at import time, before the app object
+# is even usable, and raises rather than letting an incomplete locale
+# silently fall back to English string-by-string.
+load_all_locales()
 
 app = FastAPI(title="DalGains API", version=APP_VERSION)
 

@@ -1,0 +1,41 @@
+{
+  "$note": "Descriptive specs only -- actual SVG/illustration assets are a Phase 4 task, not produced here. Each entry documents intent so Phase 4 illustration work has a clear brief instead of starting from a blank page.",
+  "motifs": [
+    {
+      "id": "painted_signboard_frame",
+      "description": "A hand-painted rectangular signboard frame with a slightly uneven, brush-stroke border -- for wrapping section headers or card titles in the signboard aesthetic (see सफ़र-ए-UP / डीलक्स सैलून references).",
+      "suggested_colors": ["surface_signboard", "ink_hero"],
+      "usage": "Section headers, recipe/dish name cards"
+    },
+    {
+      "id": "katori_bowl",
+      "description": "A simple line/filled icon of a small steel katori bowl, viewed from a 3/4 angle -- the app's core household-unit symbol.",
+      "suggested_colors": ["coal_black", "dhaba_cream"],
+      "usage": "Household-unit calibration UI, katori-based quantity pickers"
+    },
+    {
+      "id": "steel_thali",
+      "description": "A round steel thali plate with 2-3 small katori compartments visible -- represents 'today's full meal' at a glance.",
+      "suggested_colors": ["coal_black", "dhaba_cream"],
+      "usage": "Daily summary / dashboard hero"
+    },
+    {
+      "id": "chai_glass",
+      "description": "A small curved glass tumbler with visible chai-colored liquid and a bit of steam -- for beverage logging.",
+      "suggested_colors": ["tamarind_brown", "turmeric_yellow"],
+      "usage": "Beverage logging entry points, chai/coffee builder screens"
+    },
+    {
+      "id": "ghee_tin",
+      "description": "A round tin container with a paper label band, echoing the Gopal Ghee Bhandar signboard -- for oil/ghee quantity in a recipe.",
+      "suggested_colors": ["chilli_red", "signboard_white"],
+      "usage": "oil_ghee field UI in the (future) recipe builder screens"
+    },
+    {
+      "id": "sabzi_mandi_crate",
+      "description": "A wooden vegetable-market crate, slightly overflowing -- for ingredient browsing/search.",
+      "suggested_colors": ["tamarind_brown", "mint_green"],
+      "usage": "Ingredient search/browse empty states and section headers"
+    }
+  ]
+}
