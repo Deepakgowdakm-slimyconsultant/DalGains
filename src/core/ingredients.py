@@ -7,6 +7,7 @@ of being silently dropped.
 """
 import json
 import logging
+from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
@@ -26,7 +27,20 @@ def load_ingredients(path: Path = INGREDIENTS_PATH) -> dict[str, Ingredient]:
 
     Any row that fails Ingredient validation is excluded from the return
     value and appended to ingredients_rejected.json alongside the reason.
+
+    Cached per path (parsing + validating ~550 rows on every call was
+    measurably slow once callers like src.logging.engine started calling
+    this on every single log write). The cache is process-lifetime --
+    regenerating ingredients.parquet at the same path mid-process (e.g.
+    re-running parse_ifct.py against a long-running API server) won't be
+    picked up without a restart. Returns a shallow copy so callers can't
+    corrupt the shared cached dict by mutating what they get back.
     """
+    return dict(_load_ingredients_cached(path))
+
+
+@lru_cache(maxsize=8)
+def _load_ingredients_cached(path: Path) -> dict[str, Ingredient]:
     raw_df = pd.read_parquet(path)
     validated: dict[str, Ingredient] = {}
     rejected: list[dict] = []

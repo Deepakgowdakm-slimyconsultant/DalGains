@@ -6,3 +6,4 @@ hypothesis
 fastapi
 uvicorn
 httpx
+pytest-cov

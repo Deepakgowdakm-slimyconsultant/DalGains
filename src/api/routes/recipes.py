@@ -6,7 +6,6 @@ from fastapi import APIRouter, HTTPException, Query, Response
 from src.core.ingredients import load_ingredients
 from src.core.schemas import NutritionTotals, Recipe
 from src.recipes.builder import (
-    RECIPES_DIR,
     compute_nutrition,
     create_recipe,
     delete_recipe,
@@ -36,7 +35,11 @@ def get_recipe(recipe_id: str) -> Recipe:
 
 @router.post("", response_model=Recipe, status_code=201)
 def post_recipe(recipe: Recipe) -> Recipe:
-    if (RECIPES_DIR / f"{recipe.recipe_id}.json").exists():
+    try:
+        load_recipe(recipe.recipe_id)
+    except FileNotFoundError:
+        pass
+    else:
         raise HTTPException(status_code=409, detail=f"recipe_id {recipe.recipe_id!r} already exists")
     create_recipe(recipe)
     return recipe

@@ -35,8 +35,10 @@ def load_day(user_id: str, date: str) -> Union[MealLog, QuarantinedLog, None]:
     raw_content = path.read_text()
     try:
         data = json.loads(raw_content)
+        if not isinstance(data, dict):
+            raise ValueError(f"Expected a JSON object, got {type(data).__name__}")
         return MealLog(**data)
-    except (json.JSONDecodeError, ValidationError) as exc:
+    except (json.JSONDecodeError, ValidationError, ValueError, TypeError) as exc:
         return QuarantinedLog(
             path=str(path),
             raw_content=raw_content,

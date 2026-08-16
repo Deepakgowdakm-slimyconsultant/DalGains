@@ -3,6 +3,7 @@ from datetime import date as date_cls
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Union
 
+from src.core.ingredients import load_ingredients
 from src.core.schemas import Beverage, LogEntry, MealLog, NutritionTotals, QuarantinedLog, WeeklySummary
 from src.logging import aggregation, store
 from src.logging.fasting_integration import is_within_eating_window
@@ -41,7 +42,8 @@ def log_entry(user_id: str, entry: LogEntry, when: Optional[datetime] = None) ->
         entries=entries,
         computed_totals=_ZERO_TOTALS,
     )
-    meal_log = draft.model_copy(update={"computed_totals": aggregation.daily_totals(draft)})
+    totals = aggregation.daily_totals(draft, ingredients=load_ingredients())
+    meal_log = draft.model_copy(update={"computed_totals": totals})
     store.save_day(meal_log)
     return meal_log
 
@@ -91,7 +93,8 @@ def delete_entry(user_id: str, log_id: str, entry_index: int) -> Optional[MealLo
         return None
 
     draft = existing.model_copy(update={"entries": remaining})
-    meal_log = draft.model_copy(update={"computed_totals": aggregation.daily_totals(draft)})
+    totals = aggregation.daily_totals(draft, ingredients=load_ingredients())
+    meal_log = draft.model_copy(update={"computed_totals": totals})
     store.save_day(meal_log)
     return meal_log
 
