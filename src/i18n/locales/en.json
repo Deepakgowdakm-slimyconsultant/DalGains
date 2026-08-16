@@ -45,5 +45,8 @@
   "nav.week": "This week",
   "nav.recipes": "Recipes",
   "nav.profile": "Profile",
+  "nav.insights": "Insights",
+  "nav.history": "History",
+  "nav.label": "Main navigation",
   "language.toggle": "Language"
 }
