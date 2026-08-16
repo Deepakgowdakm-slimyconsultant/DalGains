@@ -7,15 +7,12 @@ body_type input. If you're adding a numeric adjustment, it belongs on
 eating_phase (see EATING_PHASE_* below), not body_type.
 
 eating_phase (schemas.EatingPhase) is the field that actually adjusts the
-calorie target. Section E of the Phase 2 brief wrote one of its six phases
-as "lean_bulk" in prose, but schemas.UserProfile.eating_phase's enum only
-defines "bulking" -- that's a naming slip in the brief, not a second
-phase; "bulking" is what's implemented and what gets the +10% adjustment
-described under "lean_bulk". UserProfile.goal (cut/maintain/lean_bulk/
-recomp, reused from Phase 1's tdee.GOAL_PRESETS) still exists on the
-profile for backward compatibility with tdee.calculate_targets(), but
-generate_plan() below is driven entirely by eating_phase, which is more
-granular (adds reverse_diet/refeed).
+calorie target. UserProfile.goal (cut/maintain/lean_bulk/recomp, reused
+from Phase 1's tdee.GOAL_PRESETS) still exists on the profile for backward
+compatibility with tdee.calculate_targets(), but generate_plan() below is
+driven entirely by eating_phase, which is more granular (adds
+reverse_diet/refeed). The two enums share the string "lean_bulk" for the
+same concept but are otherwise independent Literal types.
 """
 from typing import Optional
 
@@ -31,7 +28,7 @@ WATER_ML_PER_KG = 35.0
 EATING_PHASE_PROTEIN_PER_KG = {
     "maintenance": 1.6,
     "cutting": 2.2,
-    "bulking": 1.8,
+    "lean_bulk": 1.8,
     "recomp": 2.0,  # explicitly bumped per the Phase 2 brief
     "reverse_diet": 1.8,
     "refeed": 1.8,
@@ -115,7 +112,7 @@ PHASE_GUIDANCE = {
         "You're in a cut -- prioritize protein at every meal so you hold onto "
         "muscle while in a deficit; hunger will be real, plan for it."
     ),
-    "bulking": (
+    "lean_bulk": (
         "You're in a lean bulk -- the surplus is intentionally modest, so expect "
         "slow, steady weight gain, not a rapid jump on the scale."
     ),
@@ -170,7 +167,7 @@ def compute_calorie_target(profile: UserProfile) -> tuple[float, float, float]:
         target = tdee
     elif phase == "cutting":
         target = max(tdee * 0.8, bmr + 100)
-    elif phase == "bulking":
+    elif phase == "lean_bulk":
         target = tdee * 1.10
     elif phase == "recomp":
         target = tdee

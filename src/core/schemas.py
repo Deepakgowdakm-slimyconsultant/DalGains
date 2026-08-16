@@ -157,7 +157,7 @@ DietaryPattern = Literal[
     "vegetarian", "vegan", "eggetarian", "non_vegetarian", "jain", "satvik", "custom"
 ]
 EatingPhase = Literal[
-    "maintenance", "cutting", "bulking", "recomp", "reverse_diet", "refeed"
+    "maintenance", "cutting", "lean_bulk", "recomp", "reverse_diet", "refeed"
 ]
 FastingProtocol = Literal[
     "none", "16_8", "18_6", "20_4", "omad", "5_2", "alternate_day",
