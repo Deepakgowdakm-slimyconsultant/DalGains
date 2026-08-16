@@ -32,7 +32,24 @@ See [CLAUDE.md](./CLAUDE.md) for full project rules and conventions.
 
 ## Status
 
-Phase 1: ingredient database (IFCT-based) + TDEE calculator.
+Phase 2: pydantic schema layer, recipe builder, beverages, body-type/
+eating-phase/fasting planning, household unit calibration.
+
+## License
+
+DalGains is licensed under **AGPL-3.0** (see [LICENSE](./LICENSE)).
+
+This is deliberate, not a default. DalGains bundles the IFCT 2017 nutrient
+dataset via the [nodef/ifct2017](https://github.com/nodef/ifct2017) export,
+which is itself AGPL-3.0 (see `data/raw/ifct2017/NOTICE.md`). Combining
+that data with this codebase means the combined work carries AGPL-3.0
+obligations: anyone who redistributes DalGains, or runs a modified version
+as a network service, must also release their source under AGPL-3.0.
+
+The goal is that every improvement to this project — better recipes, more
+accurate ingredient data, new household-unit calibrations — stays available
+to Indian households, rather than being absorbed into a closed, proprietary
+fork.
 
 ## Setup
 

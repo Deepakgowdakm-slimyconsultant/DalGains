@@ -1,0 +1,50 @@
+{
+  "recipe_id": "sabudana_khichdi_fasting",
+  "name": "Sabudana Khichdi",
+  "aliases": [
+    "sabudana khichadi",
+    "vrat khichdi"
+  ],
+  "ingredients": [
+    {
+      "ingredient_id": "USDA008",
+      "qty": 50.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "F006",
+      "qty": 40.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "H012",
+      "qty": 15.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "G008",
+      "qty": 2.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "G025",
+      "qty": 1.0,
+      "unit": "g"
+    }
+  ],
+  "oil_ghee": {
+    "type": "ghee",
+    "qty_g": 6.0
+  },
+  "servings": 1,
+  "region_tag": "west",
+  "meal_type": "fasting",
+  "is_fasting_safe": true,
+  "tags": [
+    "fasting",
+    "vrat",
+    "navratri"
+  ],
+  "created_by": "system",
+  "notes": "Dry sabudana weight before soaking. Fasting-safe (no grains/dal). 1 plate ≈ 280-400 kcal."
+}

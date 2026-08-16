@@ -1,0 +1,46 @@
+{
+  "recipe_id": "curd_rice_south",
+  "name": "Curd Rice",
+  "aliases": [
+    "thayir sadam",
+    "daddojanam"
+  ],
+  "ingredients": [
+    {
+      "ingredient_id": "A015",
+      "qty": 60.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "USDA007",
+      "qty": 100.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "H013",
+      "qty": 1.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "G008",
+      "qty": 2.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "G014",
+      "qty": 1.0,
+      "unit": "g"
+    }
+  ],
+  "oil_ghee": {
+    "type": "oil",
+    "qty_g": 3.0
+  },
+  "servings": 1,
+  "region_tag": "south",
+  "meal_type": "lunch",
+  "is_fasting_safe": false,
+  "tags": [],
+  "created_by": "system",
+  "notes": "Raw rice weight + curd. 1 bowl ≈ 250-360 kcal."
+}

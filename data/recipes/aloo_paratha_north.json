@@ -1,0 +1,40 @@
+{
+  "recipe_id": "aloo_paratha_north",
+  "name": "Aloo Paratha",
+  "aliases": [
+    "potato paratha"
+  ],
+  "ingredients": [
+    {
+      "ingredient_id": "A019",
+      "qty": 70.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "F006",
+      "qty": 60.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "G008",
+      "qty": 2.0,
+      "unit": "g"
+    },
+    {
+      "ingredient_id": "G014",
+      "qty": 1.0,
+      "unit": "g"
+    }
+  ],
+  "oil_ghee": {
+    "type": "ghee",
+    "qty_g": 10.0
+  },
+  "servings": 1,
+  "region_tag": "north",
+  "meal_type": "breakfast",
+  "is_fasting_safe": false,
+  "tags": [],
+  "created_by": "system",
+  "notes": "Ghee used in both dough and pan-frying, tracked via the oil_ghee field. 1 paratha ≈ 280-400 kcal."
+}
