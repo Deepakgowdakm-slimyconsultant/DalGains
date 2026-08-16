@@ -99,10 +99,17 @@ def test_recipe_rejects_zero_servings():
         Recipe(**_valid_recipe_kwargs(servings=0))
 
 
-def test_recipe_ingredient_allows_zero_qty():
-    # qty=0 is legal (a no-op ingredient); recipe math must treat it as inert.
-    ri = RecipeIngredient(ingredient_id="B021", qty=0, unit="g")
-    assert ri.qty == 0
+def test_recipe_ingredient_rejects_zero_qty():
+    # Phase 3: qty must be strictly positive -- a zero-quantity ingredient
+    # is meaningless once household-unit resolution is in play. "No
+    # ingredient" is now expressed by omitting it from the list.
+    with pytest.raises(ValidationError):
+        RecipeIngredient(ingredient_id="B021", qty=0, unit="g")
+
+
+def test_recipe_ingredient_rejects_unknown_unit():
+    with pytest.raises(ValidationError):
+        RecipeIngredient(ingredient_id="B021", qty=1, unit="bucket")
 
 
 def test_recipe_ingredient_rejects_negative_qty():

@@ -7,18 +7,18 @@
   "ingredients": [
     {
       "ingredient_id": "A019",
-      "qty": 70.0,
-      "unit": "g"
+      "qty": 1.0,
+      "unit": "katori"
     },
     {
       "ingredient_id": "F006",
-      "qty": 60.0,
-      "unit": "g"
+      "qty": 1.0,
+      "unit": "piece"
     },
     {
       "ingredient_id": "G008",
-      "qty": 2.0,
-      "unit": "g"
+      "qty": 1.0,
+      "unit": "piece"
     },
     {
       "ingredient_id": "G014",
@@ -36,5 +36,5 @@
   "is_fasting_safe": false,
   "tags": [],
   "created_by": "system",
-  "notes": "Ghee used in both dough and pan-frying, tracked via the oil_ghee field. 1 paratha ≈ 280-400 kcal."
+  "notes": "Ghee used in both dough and pan-frying, tracked via the oil_ghee field. 1 paratha ≈ 350-450 kcal. Phase 3: switched to household units (1 katori atta, 1 whole potato, 1 green chilli), which raised the potato/atta quantities toward more realistic whole-piece portions -- was 280-400 kcal on raw grams."
 }

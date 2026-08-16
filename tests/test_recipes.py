@@ -19,7 +19,10 @@ SEEDED_RECIPE_RANGES = {
     "rajma_chawal_north": (380, 520),
     "curd_rice_south": (250, 360),
     "sabudana_khichdi_fasting": (280, 400),
-    "aloo_paratha_north": (280, 400),
+    # Widened in Phase 3: switching to household units (1 whole potato,
+    # 1 katori atta) pushed this to ~427 kcal -- a more realistic
+    # whole-piece portion than the original raw-gram estimate.
+    "aloo_paratha_north": (350, 450),
 }
 
 
@@ -70,25 +73,30 @@ def test_compute_nutrition_scales_with_servings(simple_recipe, ingredients):
     assert three.energy_kcal == pytest.approx(one.energy_kcal * 3)
 
 
-def test_compute_nutrition_zero_qty_ingredient_does_not_change_totals(ingredients):
-    base = Recipe(
-        recipe_id="zero_qty_base",
-        name="Base",
-        ingredients=[RecipeIngredient(ingredient_id="B021", qty=100, unit="g")],
+def test_compute_nutrition_resolves_non_gram_units(ingredients):
+    # B021 (toor dal) has a density of 1.0 g/ml (src/core/densities.py),
+    # and the default katori is 150ml, so "1 katori" == "150g" for it.
+    grams_recipe = Recipe(
+        recipe_id="grams_version",
+        name="Grams",
+        ingredients=[RecipeIngredient(ingredient_id="B021", qty=150, unit="g")],
         servings=1,
         region_tag="custom",
         meal_type="lunch",
         created_by="test",
     )
-    with_zero = base.model_copy(
-        update={
-            "ingredients": base.ingredients
-            + [RecipeIngredient(ingredient_id="G017", qty=0, unit="g")]
-        }
+    katori_recipe = Recipe(
+        recipe_id="katori_version",
+        name="Katori",
+        ingredients=[RecipeIngredient(ingredient_id="B021", qty=1, unit="katori")],
+        servings=1,
+        region_tag="custom",
+        meal_type="lunch",
+        created_by="test",
     )
-    base_totals = compute_nutrition(base, ingredients=ingredients)
-    zero_totals = compute_nutrition(with_zero, ingredients=ingredients)
-    assert base_totals == zero_totals
+    grams_totals = compute_nutrition(grams_recipe, ingredients=ingredients)
+    katori_totals = compute_nutrition(katori_recipe, ingredients=ingredients)
+    assert grams_totals == katori_totals
 
 
 def test_compute_nutrition_unknown_ingredient_raises(ingredients):

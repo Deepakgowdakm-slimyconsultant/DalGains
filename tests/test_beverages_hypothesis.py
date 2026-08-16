@@ -50,8 +50,9 @@ def test_buttermilk_doubling_volume_doubles_macros_exactly(volume_ml):
 )
 def test_alcohol_zero_abv_contributes_zero_ethanol_regardless_of_volume(volume_ml, alcohol_type):
     drink = bev.build_alcohol(type=alcohol_type, volume_ml=volume_ml, abv_pct=0)
-    ethanol_row = next(ri for ri in drink.ingredients if ri.ingredient_id == "MANUAL004")
-    assert ethanol_row.qty == pytest.approx(0)
+    # RecipeIngredient no longer allows qty=0 (Phase 3), so a zero-alcohol
+    # drink omits the ethanol row entirely rather than including it at 0.
+    assert not any(ri.ingredient_id == "MANUAL004" for ri in drink.ingredients)
 
 
 @given(

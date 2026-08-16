@@ -56,6 +56,11 @@ class Ingredient(BaseModel):
     fiber_g_per_100g: float = Field(ge=0, le=100)
     source: IngredientSource
     category: IngredientCategory
+    # Grams per single piece (e.g. one egg, one paratha) -- optional since
+    # most ingredients are only ever measured by weight/volume. Required by
+    # src.core.units.resolve_to_grams whenever a RecipeIngredient uses
+    # unit="piece"; that function raises a clear error if it's missing.
+    per_piece_g: Optional[float] = Field(default=None, gt=0)
 
     @model_validator(mode="after")
     def _check_macro_sum(self) -> "Ingredient":
@@ -89,11 +94,25 @@ RegionTag = Literal["north", "south", "east", "west", "northeast", "pan_india", 
 MealType = Literal["breakfast", "lunch", "dinner", "snack", "beverage", "dessert", "fasting"]
 OilGheeType = Literal["oil", "ghee", "butter", "none"]
 
+# "custom" is a fixed sentinel meaning "already grams, no unit lookup" --
+# not a way to reference an arbitrarily-named calibrated unit. A named
+# custom unit (e.g. "my grandmother's bowl") would need its own field if
+# that's wanted later; see src/core/units.py's resolve_to_grams.
+UnitName = Literal[
+    "g", "ml", "katori", "small_katori", "glass", "large_glass", "tsp",
+    "tbsp", "mutthi", "plate", "piece", "custom",
+]
+
 
 class RecipeIngredient(BaseModel):
     ingredient_id: str = Field(min_length=1)
-    qty: float = Field(ge=0)
-    unit: str = Field(min_length=1)
+    # Strictly positive: Phase 2 allowed qty=0 as an explicit "inert
+    # ingredient" no-op, but Phase 3's household-unit resolution makes a
+    # zero-quantity entry meaningless (there's nothing to convert). "No
+    # ingredient" is now expressed by omitting it from the list, not by a
+    # zero-qty entry -- see beverages.py's builders for the guard pattern.
+    qty: float = Field(gt=0)
+    unit: UnitName
 
 
 class OilGhee(BaseModel):

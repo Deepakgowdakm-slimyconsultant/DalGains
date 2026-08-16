@@ -13,18 +13,18 @@
     },
     {
       "ingredient_id": "USDA007",
-      "qty": 100.0,
-      "unit": "g"
+      "qty": 1.0,
+      "unit": "small_katori"
     },
     {
       "ingredient_id": "H013",
-      "qty": 1.0,
-      "unit": "g"
+      "qty": 0.25,
+      "unit": "tsp"
     },
     {
       "ingredient_id": "G008",
-      "qty": 2.0,
-      "unit": "g"
+      "qty": 1.0,
+      "unit": "piece"
     },
     {
       "ingredient_id": "G014",
@@ -42,5 +42,5 @@
   "is_fasting_safe": false,
   "tags": [],
   "created_by": "system",
-  "notes": "Raw rice weight + curd. 1 bowl ≈ 250-360 kcal."
+  "notes": "Raw rice weight + curd. 1 bowl ≈ 250-360 kcal. Updated to household units in Phase 3 (was all grams)."
 }

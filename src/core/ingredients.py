@@ -35,6 +35,12 @@ def load_ingredients(path: Path = INGREDIENTS_PATH) -> dict[str, Ingredient]:
         record = dict(record)
         aliases = record.get("aliases")
         record["aliases"] = list(aliases) if aliases is not None else []
+        # pandas stores a missing optional numeric as NaN, not None -- a
+        # bare NaN fails Ingredient.per_piece_g's gt=0 constraint (NaN
+        # compares False to everything). Normalize to None, its true value.
+        per_piece_g = record.get("per_piece_g")
+        if per_piece_g is not None and pd.isna(per_piece_g):
+            record["per_piece_g"] = None
         try:
             ingredient = Ingredient(**record)
         except ValidationError as exc:

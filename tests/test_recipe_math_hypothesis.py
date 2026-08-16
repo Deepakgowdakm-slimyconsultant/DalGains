@@ -4,6 +4,7 @@ from hypothesis import strategies as st
 
 from src.core.ingredients import load_ingredients
 from src.core.schemas import Recipe, RecipeIngredient
+from src.core.units import convert_to_grams
 from src.recipes.builder import compute_nutrition
 
 INGREDIENTS = load_ingredients()
@@ -64,15 +65,16 @@ def test_nutrition_scales_linearly_with_servings(ingredient, qty, n):
     assert scaled.fiber_g == pytest.approx(one.fiber_g * n, rel=1e-9)
 
 
-@given(ingredient=_ingredient, qty=_qty, zero_ingredient=_ingredient)
-def test_adding_zero_qty_ingredient_does_not_change_totals(ingredient, qty, zero_ingredient):
-    base = _recipe([RecipeIngredient(ingredient_id=ingredient.ingredient_id, qty=qty, unit="g")])
-    with_zero = base.model_copy(
-        update={
-            "ingredients": base.ingredients
-            + [RecipeIngredient(ingredient_id=zero_ingredient.ingredient_id, qty=0, unit="g")]
-        }
-    )
-    base_totals = compute_nutrition(base, ingredients=INGREDIENTS)
-    zero_totals = compute_nutrition(with_zero, ingredients=INGREDIENTS)
-    assert base_totals == zero_totals
+@given(ingredient=_ingredient, volume_ml=_qty)
+def test_ml_unit_matches_manual_density_conversion(ingredient, volume_ml):
+    # RecipeIngredient no longer allows qty=0 (Phase 3: a zero-quantity
+    # entry is meaningless once household-unit resolution is in play --
+    # "no ingredient" is expressed by omission, not a zero-qty row). This
+    # replaces the old zero-qty-is-a-no-op property with a check that the
+    # new unit-resolution path (unit="ml") agrees with a manual density
+    # conversion via src.core.units.convert_to_grams.
+    recipe = _recipe([RecipeIngredient(ingredient_id=ingredient.ingredient_id, qty=volume_ml, unit="ml")])
+    totals = compute_nutrition(recipe, servings=1, ingredients=INGREDIENTS)
+    expected_g = convert_to_grams(ingredient, volume_ml)
+    expected_kcal = ingredient.energy_kcal_per_100g * expected_g / 100
+    assert totals.energy_kcal == pytest.approx(expected_kcal, abs=0.5)

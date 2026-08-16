@@ -155,7 +155,9 @@ def build_lassi(
     sugar_g: float,
     fruit_g: float = 0,
 ) -> Beverage:
-    ingredients = [RecipeIngredient(ingredient_id="USDA007", qty=yogurt_ml, unit="g")]
+    ingredients = []
+    if yogurt_ml > 0:
+        ingredients.append(RecipeIngredient(ingredient_id="USDA007", qty=yogurt_ml, unit="g"))
     if sugar_g > 0:
         ingredients.append(RecipeIngredient(ingredient_id="USDA009", qty=sugar_g, unit="g"))
     if type == "mango" and fruit_g > 0:
@@ -252,13 +254,16 @@ def build_alcohol(type: ALCOHOL_TYPE, volume_ml: float, abv_pct: float) -> Bever
     alcohol_g = volume_ml * (abv_pct / 100) * ETHANOL_DENSITY_G_PER_ML
     residual_carbs_g = volume_ml * RESIDUAL_CARBS_G_PER_100ML[type] / 100
 
+    ingredients = []
+    if alcohol_g > 0:
+        ingredients.append(RecipeIngredient(ingredient_id="MANUAL004", qty=alcohol_g, unit="g"))
+    if residual_carbs_g > 0:
+        ingredients.append(RecipeIngredient(ingredient_id="USDA009", qty=residual_carbs_g, unit="g"))
+
     return Beverage(
         recipe_id=_new_id("alcohol"),
         name=type.title(),
-        ingredients=[
-            RecipeIngredient(ingredient_id="MANUAL004", qty=alcohol_g, unit="g"),
-            RecipeIngredient(ingredient_id="USDA009", qty=residual_carbs_g, unit="g"),
-        ],
+        ingredients=ingredients,
         servings=1,
         created_by="system",
         tags=[type],
@@ -285,7 +290,9 @@ def build_protein_shake(
     source_ingredient = ingredients[source_id]
     powder_g = protein_g / (source_ingredient.protein_g_per_100g / 100)
 
-    recipe_ingredients = [RecipeIngredient(ingredient_id=source_id, qty=powder_g, unit="g")]
+    recipe_ingredients = []
+    if powder_g > 0:
+        recipe_ingredients.append(RecipeIngredient(ingredient_id=source_id, qty=powder_g, unit="g"))
     milk_id = _milk_ingredient_id(milk_type, plant_milk_kind)
     if milk_id and milk_ml > 0:
         recipe_ingredients.append(RecipeIngredient(ingredient_id=milk_id, qty=milk_ml, unit="g"))

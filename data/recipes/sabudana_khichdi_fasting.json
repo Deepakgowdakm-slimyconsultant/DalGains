@@ -8,13 +8,13 @@
   "ingredients": [
     {
       "ingredient_id": "USDA008",
-      "qty": 50.0,
-      "unit": "g"
+      "qty": 2.0,
+      "unit": "mutthi"
     },
     {
       "ingredient_id": "F006",
-      "qty": 40.0,
-      "unit": "g"
+      "qty": 0.5,
+      "unit": "piece"
     },
     {
       "ingredient_id": "H012",
@@ -23,13 +23,13 @@
     },
     {
       "ingredient_id": "G008",
-      "qty": 2.0,
-      "unit": "g"
+      "qty": 1.0,
+      "unit": "piece"
     },
     {
       "ingredient_id": "G025",
-      "qty": 1.0,
-      "unit": "g"
+      "qty": 0.25,
+      "unit": "tsp"
     }
   ],
   "oil_ghee": {
@@ -46,5 +46,5 @@
     "navratri"
   ],
   "created_by": "system",
-  "notes": "Dry sabudana weight before soaking. Fasting-safe (no grains/dal). 1 plate ≈ 280-400 kcal."
+  "notes": "Dry sabudana weight before soaking. Fasting-safe (no grains/dal). 1 plate ≈ 280-400 kcal. Updated to household units in Phase 3 (was all grams)."
 }
