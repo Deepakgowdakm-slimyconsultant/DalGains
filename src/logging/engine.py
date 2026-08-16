@@ -100,6 +100,25 @@ def get_day(user_id: str, date: str) -> Union[MealLog, QuarantinedLog, None]:
     return store.load_day(user_id, date)
 
 
+def tag_day(user_id: str, date: str, tag: str) -> MealLog:
+    """Adds a free-form label (e.g. "diwali") to a day's log -- used by
+    src/insights/engine.py's festival_flex rule. The day must already
+    have at least one entry logged; MealLog has nothing to attach a tag
+    to otherwise.
+    """
+    existing = store.load_day(user_id, date)
+    if existing is None:
+        raise FileNotFoundError(f"No log for {user_id!r} on {date!r} to tag")
+    if isinstance(existing, QuarantinedLog):
+        raise ValueError(f"Cannot tag a quarantined log for {user_id!r} on {date!r}: {existing.error}")
+
+    if tag in existing.tags:
+        return existing
+    meal_log = existing.model_copy(update={"tags": existing.tags + [tag]})
+    store.save_day(meal_log)
+    return meal_log
+
+
 def get_week(user_id: str, week_ending_date: str) -> WeeklySummary:
     return aggregation.weekly_totals(user_id, week_ending_date)
 

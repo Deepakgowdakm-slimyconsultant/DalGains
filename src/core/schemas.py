@@ -273,6 +273,11 @@ class MealLog(BaseModel):
     entries: list[LogEntry] = Field(min_length=1)
     computed_totals: NutritionTotals
     notes: Optional[str] = None
+    # Free-form day-level labels, e.g. "diwali", "festival", "travel" --
+    # src/insights/engine.py's festival_flex rule looks for a festival
+    # marker here to suppress calorie warnings on days the user has
+    # flagged as a celebration.
+    tags: list[str] = Field(default_factory=list)
 
 
 class QuarantinedLog(BaseModel):
