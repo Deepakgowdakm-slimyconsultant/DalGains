@@ -48,5 +48,22 @@
   "nav.insights": "ಒಳನೋಟಗಳು",
   "nav.history": "ಇತಿಹಾಸ",
   "nav.label": "ಮುಖ್ಯ ನ್ಯಾವಿಗೇಷನ್",
-  "language.toggle": "ಭಾಷೆ"
+  "language.toggle": "ಭಾಷೆ",
+  "onboarding.name_title": "ನಿಮ್ಮನ್ನು ಏನೆಂದು ಕರೆಯಲಿ?",
+  "onboarding.name_placeholder": "ನಿಮ್ಮ ಹೆಸರು",
+  "onboarding.age_title": "ನಿಮ್ಮ ವಯಸ್ಸು ಎಷ್ಟು?",
+  "onboarding.age_placeholder": "ವಯಸ್ಸು (ವರ್ಷಗಳಲ್ಲಿ)",
+  "onboarding.sex_title": "ನಿಮ್ಮ ಲಿಂಗ ಯಾವುದು?",
+  "onboarding.height_title": "ನಿಮ್ಮ ಎತ್ತರ ಎಷ್ಟು?",
+  "onboarding.weight_title": "ನಿಮ್ಮ ಪ್ರಸ್ತುತ ತೂಕ ಎಷ್ಟು?",
+  "onboarding.activity_title": "ನಿಮ್ಮ ದಿನ ಎಷ್ಟು ಸಕ್ರಿಯವಾಗಿರುತ್ತದೆ?",
+  "onboarding.goal_title": "ನಿಮ್ಮ ಗುರಿ ಏನು?",
+  "onboarding.dietary_title": "ನೀವು ಏನು ತಿನ್ನುತ್ತೀರಿ?",
+  "onboarding.fasting_title": "ನೀವು ಉಪವಾಸದ ಕ್ರಮವನ್ನು ಅನುಸರಿಸುತ್ತೀರಾ?",
+  "onboarding.fasting_subtitle": "ಇಲ್ಲದಿದ್ದರೆ ಇದನ್ನು ಬಿಟ್ಟುಬಿಡಿ -- ನೀವು ಇದನ್ನು ನಂತರ ಯಾವಾಗ ಬೇಕಾದರೂ ಸೇರಿಸಬಹುದು",
+  "onboarding.plan_title": "ಇದು ನಿಮ್ಮ ಯೋಜನೆ",
+  "onboarding.calibration_title": "ನಿಮ್ಮ ಕಟೋರಿಯನ್ನು ಹೊಂದಿಸೋಣ",
+  "onboarding.calibration_subtitle": "ಪ್ರಾರಂಭಿಸಲು ನಾವು ಪ್ರಮಾಣಿತ ಗಾತ್ರಗಳನ್ನು ಬಳಸುತ್ತೇವೆ -- ನೀವು ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ನಿಮ್ಮ ಬಟ್ಟಲುಗಳು, ಗ್ಲಾಸ್‌ಗಳು ಮತ್ತು ಚಮಚಗಳನ್ನು ಮಾಪನಾಂಕ ಮಾಡಬಹುದು",
+  "onboarding.use_defaults": "ಡೀಫಾಲ್ಟ್ ಬಳಸಿ, ನಂತರ ಮಾಪನಾಂಕ ಮಾಡಿ",
+  "onboarding.calibrate_now": "ಈಗ ಮಾಪನಾಂಕ ಮಾಡಿ"
 }

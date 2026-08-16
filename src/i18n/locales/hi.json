@@ -48,5 +48,22 @@
   "nav.insights": "जानकारियाँ",
   "nav.history": "इतिहास",
   "nav.label": "मुख्य नेविगेशन",
-  "language.toggle": "भाषा"
+  "language.toggle": "भाषा",
+  "onboarding.name_title": "आपको क्या कहकर बुलाएं?",
+  "onboarding.name_placeholder": "आपका नाम",
+  "onboarding.age_title": "आपकी उम्र कितनी है?",
+  "onboarding.age_placeholder": "उम्र (वर्षों में)",
+  "onboarding.sex_title": "आपका लिंग क्या है?",
+  "onboarding.height_title": "आपकी लंबाई कितनी है?",
+  "onboarding.weight_title": "आपका वर्तमान वजन क्या है?",
+  "onboarding.activity_title": "आपका दिन कितना सक्रिय होता है?",
+  "onboarding.goal_title": "आपका लक्ष्य क्या है?",
+  "onboarding.dietary_title": "आप क्या खाते हैं?",
+  "onboarding.fasting_title": "क्या आप उपवास की कोई दिनचर्या मानते हैं?",
+  "onboarding.fasting_subtitle": "यदि नहीं, तो इसे छोड़ दें -- आप इसे बाद में कभी भी जोड़ सकते हैं",
+  "onboarding.plan_title": "यह रहा आपका प्लान",
+  "onboarding.calibration_title": "चलिए आपकी कटोरी सेट करें",
+  "onboarding.calibration_subtitle": "हम शुरुआत के लिए मानक आकार उपयोग करते हैं -- आप प्रोफ़ाइल में कभी भी अपने कटोरे, गिलास और चम्मच कैलिब्रेट कर सकते हैं",
+  "onboarding.use_defaults": "डिफ़ॉल्ट उपयोग करें, बाद में कैलिब्रेट करें",
+  "onboarding.calibrate_now": "अभी कैलिब्रेट करें"
 }

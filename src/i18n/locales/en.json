@@ -48,5 +48,22 @@
   "nav.insights": "Insights",
   "nav.history": "History",
   "nav.label": "Main navigation",
-  "language.toggle": "Language"
+  "language.toggle": "Language",
+  "onboarding.name_title": "What should we call you?",
+  "onboarding.name_placeholder": "Your name",
+  "onboarding.age_title": "How old are you?",
+  "onboarding.age_placeholder": "Age in years",
+  "onboarding.sex_title": "What's your sex?",
+  "onboarding.height_title": "How tall are you?",
+  "onboarding.weight_title": "What's your current weight?",
+  "onboarding.activity_title": "How active is your day?",
+  "onboarding.goal_title": "What's your goal?",
+  "onboarding.dietary_title": "What do you eat?",
+  "onboarding.fasting_title": "Do you follow a fasting routine?",
+  "onboarding.fasting_subtitle": "Skip this if you don't -- you can always add it later",
+  "onboarding.plan_title": "Here's your plan",
+  "onboarding.calibration_title": "Let's set up your katori",
+  "onboarding.calibration_subtitle": "We use standard sizes to start -- you can calibrate your own bowls, glasses and spoons any time in Profile",
+  "onboarding.use_defaults": "Use defaults, calibrate later",
+  "onboarding.calibrate_now": "Calibrate now"
 }

@@ -12,7 +12,7 @@ export function SignboardHeader({ title, subtitle, trailing }: SignboardHeaderPr
   return (
     <header className="flex items-center justify-between gap-md rounded-md bg-surface_signboard px-md py-lg">
       <div className="min-w-0">
-        <h1 className="truncate font-display-latin text-display text-ink_hero">{title}</h1>
+        <h1 className="font-display-latin text-display text-ink_hero">{title}</h1>
         {subtitle && <p className="mt-xs text-body text-ink_hero/80">{subtitle}</p>}
       </div>
       {trailing && <div className="shrink-0">{trailing}</div>}
