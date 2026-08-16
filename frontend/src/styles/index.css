@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-surface_primary;
+  }
+
+  body {
+    @apply bg-surface_primary text-ink_body font-body text-body antialiased;
+  }
+
+  #root {
+    @apply mx-auto min-h-dvh max-w-app;
+  }
+}
