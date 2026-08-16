@@ -18,13 +18,13 @@
     },
     {
       "ingredient_id": "G017",
-      "qty": 20.0,
-      "unit": "g"
+      "qty": 1.5,
+      "unit": "tbsp"
     },
     {
       "ingredient_id": "D075",
-      "qty": 25.0,
-      "unit": "g"
+      "qty": 2.0,
+      "unit": "tbsp"
     },
     {
       "ingredient_id": "G011",
@@ -38,8 +38,8 @@
     },
     {
       "ingredient_id": "G025",
-      "qty": 1.0,
-      "unit": "g"
+      "qty": 0.25,
+      "unit": "tsp"
     }
   ],
   "oil_ghee": {
@@ -52,5 +52,5 @@
   "is_fasting_safe": false,
   "tags": [],
   "created_by": "system",
-  "notes": "Raw/dry ingredient weights per serving (rajma + rice combined plate). 1 serving ≈ 380-520 kcal."
+  "notes": "Raw/dry ingredient weights per serving (rajma + rice combined plate). 1 serving ≈ 380-520 kcal. Updated to household units in Phase 3 (was all grams)."
 }

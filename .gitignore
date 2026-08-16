@@ -16,6 +16,13 @@ env/
 .pytest_cache/
 .coverage
 htmlcov/
+.hypothesis/
+
+# Runtime user data (per-user profiles, logs, unit calibrations) --
+# generated at runtime under data/users/ and data/logs/, not source
+# content. See data/recipes/ and data/processed/ for the checked-in data.
+data/users/
+data/logs/
 
 # OS
 .DS_Store

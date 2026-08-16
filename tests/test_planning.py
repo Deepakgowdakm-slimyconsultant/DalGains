@@ -37,10 +37,10 @@ def test_cutting_is_less_than_maintenance():
     assert cutting < maintenance
 
 
-def test_bulking_is_greater_than_maintenance():
-    bulking, _, _ = compute_calorie_target(_profile(eating_phase="bulking"))
+def test_lean_bulk_is_greater_than_maintenance():
+    lean_bulk, _, _ = compute_calorie_target(_profile(eating_phase="lean_bulk"))
     maintenance, _, _ = compute_calorie_target(_profile(eating_phase="maintenance"))
-    assert bulking > maintenance
+    assert lean_bulk > maintenance
 
 
 def test_cutting_never_drops_below_bmr_plus_100():

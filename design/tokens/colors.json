@@ -1,0 +1,83 @@
+{
+  "$schema_note": "Framework-agnostic design tokens. See design/README.md for the aesthetic thesis these were pulled from.",
+  "palette": {
+    "turmeric_yellow": {
+      "hex": "#D9A441",
+      "source": "Munna Tea Stall signboard (सफ़र-ए-UP reference); \"Songs that play...\" subtext color (हॉर्न ओके प्लीज़ reference)"
+    },
+    "tamarind_brown": {
+      "hex": "#6B4226",
+      "source": "Sepia/ochre background wash and wood tones across the सफ़र-ए-UP reference"
+    },
+    "chilli_red": {
+      "hex": "#B23A2E",
+      "source": "Gopal Ghee Bhandar signboard (सफ़र-ए-UP reference); डीलक्स सैलून building facade"
+    },
+    "mint_green": {
+      "hex": "#7A9471",
+      "source": "Muted tree foliage in the सफ़र-ए-UP reference"
+    },
+    "saffron_orange": {
+      "hex": "#E07A3E",
+      "source": "Dusk sky and ghee-shop orange (हॉर्न ओके प्लीज़ / सफ़र-ए-UP references)"
+    },
+    "deep_indigo": {
+      "hex": "#2E2A4A",
+      "source": "Night highway sky (हॉर्न ओके प्लीज़ reference)"
+    },
+    "dhaba_cream": {
+      "hex": "#F0E4C8",
+      "source": "UP state transport bus body and signboard backgrounds (सफ़र-ए-UP reference)"
+    },
+    "coal_black": {
+      "hex": "#1C1815",
+      "source": "Dark UI chrome and lettering outlines across all three references"
+    },
+    "signboard_white": {
+      "hex": "#FAF6EC",
+      "source": "Hero headline color in all three references (\"अगली बस आ गई है।\", \"हॉर्न ओके प्लीज़\", \"डीलक्स सैलून\")"
+    },
+    "dusk_purple": {
+      "hex": "#4A3B5C",
+      "source": "Twilight sky gradient behind the truck (हॉर्न ओके प्लीज़ reference)"
+    },
+    "kadhai_black": {
+      "hex": "#14100D",
+      "source": "Deepest shadow tone, darker than coal_black -- for drop shadows and pressed states"
+    }
+  },
+  "semantic": {
+    "surface_primary": {
+      "token": "dhaba_cream",
+      "purpose": "Default app background"
+    },
+    "surface_signboard": {
+      "token": "tamarind_brown",
+      "purpose": "Colored card/panel backgrounds that mimic a painted shop sign"
+    },
+    "ink_body": {
+      "token": "coal_black",
+      "purpose": "Default body text on light surfaces"
+    },
+    "ink_hero": {
+      "token": "signboard_white",
+      "purpose": "Hero headline text, set over painterly/illustrated backgrounds"
+    },
+    "accent_action": {
+      "token": "saffron_orange",
+      "purpose": "Primary buttons and calls to action"
+    },
+    "accent_warning": {
+      "token": "chilli_red",
+      "purpose": "Warnings (e.g. undereating_warning, calorie_surplus_streak insights)"
+    },
+    "accent_celebration": {
+      "token": "turmeric_yellow",
+      "purpose": "Celebrations (e.g. streak_celebration, festival_flex insights)"
+    },
+    "accent_success": {
+      "token": "mint_green",
+      "purpose": "Not in the Phase 3 brief's required list -- added because adherence/streak UI needs an \"on track\" color distinct from celebration/warning."
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$note": "8px base scale. Tap targets are bumped above the WCAG 2.5.5 minimum (48x48px) for primary actions, since DalGains' audience spans ~13 to 80+ (CLAUDE.md) and includes users for whom standard mobile tap targets are already too small.",
+  "scale_px": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48,
+    "xxxl": 64
+  },
+  "tap_targets": {
+    "minimum_px": { "width": 48, "height": 48, "note": "WCAG 2.5.5 floor -- never go below this, anywhere" },
+    "primary_action_px": { "width": 56, "height": 56, "note": "Primary buttons (log this, confirm portion, etc.) -- DalGains' bump above the WCAG floor" }
+  },
+  "layout": {
+    "screen_margin_px": 16,
+    "card_padding_px": 16,
+    "section_gap_px": 24
+  }
+}

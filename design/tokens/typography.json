@@ -1,0 +1,38 @@
+{
+  "$note": "All fonts below are Google Fonts, SIL Open Font License. Devanagari/Kannada carry no true 'hand-painted signboard' option on Google Fonts -- see design/README.md for the gap this leaves and how each choice was made.",
+  "families": {
+    "devanagari_display": {
+      "primary": "Yatra One",
+      "weights": [400],
+      "rationale": "Explicitly modeled on hand-painted Mumbai railway/hoarding signage -- heavy strokes, angular cuts, deliberately preserves brush-painted idiosyncrasy. Closest match on Google Fonts to the सफ़र-ए-UP / हॉर्न ओके प्लीज़ hero lettering. Single weight only (400) -- weight variation for hierarchy has to come from size, not boldness.",
+      "alternate": "Rozha One",
+      "alternate_rationale": "More polished high-contrast serif (boutique menu-card register rather than roadside signage); use where a calmer, more classic Devanagari headline is wanted instead of the rougher Yatra One."
+    },
+    "kannada_display": {
+      "primary": "Baloo Tamma 2",
+      "weights": [400, 500, 600, 700, 800],
+      "rationale": "No Kannada Google Font matches Yatra One's hand-painted-signboard character (researched: Baloo Tamma 2, Anek Kannada, Hubballi are the closest options, all rounded/geometric/handwritten-casual rather than brush-painted). Baloo Tamma 2 chosen as the warmest and friendliest of the three, with a full weight range for hero-to-headline hierarchy that Yatra One can't offer.",
+      "known_gap": "Flag for revisit once a closer signboard-style Kannada display face is found or commissioned."
+    },
+    "latin_display": {
+      "primary": "Fraunces",
+      "weights": [300, 400, 500, 600, 700, 800, 900],
+      "rationale": "Warm, quirky, vintage-editorial serif with organic curves and optical-size/softness variable axes -- the closest Latin match to a hand-painted feel without going full script font.",
+      "alternate": "DM Serif Display",
+      "alternate_rationale": "More refined/delicate transitional serif (poster type rather than signboard); single weight only."
+    },
+    "body": {
+      "family_stack": ["Noto Sans", "Noto Sans Devanagari", "Noto Sans Kannada"],
+      "note": "Not one file -- Google Fonts ships these as separate per-script families designed to share metrics/style. Load all three and let per-script font-family fallback (or unicode-range) select the right one; do not assume a single 'Noto Sans' family covers all scripts.",
+      "weights": [400, 500, 600, 700]
+    }
+  },
+  "scale": {
+    "$note": "Minimum sizes are deliberately larger than typical apps -- DalGains' audience spans ~13 to 80+ (CLAUDE.md). Values are mobile-first; desktop may scale up further, never down.",
+    "hero": { "font": "display", "size_px_min": 40, "line_height": 1.1, "weight": "boldest available for the active script" },
+    "display": { "font": "display", "size_px_min": 28, "line_height": 1.15 },
+    "headline": { "font": "display", "size_px_min": 22, "line_height": 1.25 },
+    "body": { "font": "body", "size_px_min": 16, "line_height": 1.5 },
+    "caption": { "font": "body", "size_px_min": 13, "line_height": 1.4, "usage": "Sparingly -- attribution, timestamps, fine print only, never a primary reading size" }
+  }
+}

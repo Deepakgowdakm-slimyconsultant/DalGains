@@ -39,6 +39,17 @@ MANUAL_ALIASES = {
     "E001": ["apple"],  # Apple, big
 }
 
+# Grams-per-piece for common whole-item ingredients, so recipes can use
+# unit="piece" (e.g. "1 potato", "2 green chillies") instead of grams.
+# Starting point covering only what the Phase 3 seed recipes needed --
+# expand as more whole-item ingredients come up. Real produce size varies;
+# these are reasonable single-item averages, not measured values.
+PER_PIECE_OVERRIDES = {
+    "F006": 100.0,  # Potato, brown skin, big
+    "G008": 5.0,  # Chillies, green - all varieties
+    "G022": 2.0,  # Chillies, red
+}
+
 # Maps IFCT's own food-group names (compositions.csv "grup" column) onto
 # schemas.IngredientCategory. Mushrooms and "Miscellaneous Foods" don't map
 # cleanly onto any category -- flagged as a starting point, not a finished
@@ -162,6 +173,7 @@ def parse() -> pd.DataFrame:
                 "fiber_g_per_100g": float(row["fibtg"]),
                 "source": "IFCT",
                 "category": category,
+                "per_piece_g": PER_PIECE_OVERRIDES.get(code),
             }
         )
 

@@ -14,6 +14,7 @@ from pydantic import ValidationError
 
 from src.core.ingredients import load_ingredients
 from src.core.schemas import Ingredient, NutritionTotals, Recipe
+from src.core.units import resolve_to_grams
 
 RECIPES_DIR = Path(__file__).resolve().parents[2] / "data" / "recipes"
 
@@ -47,19 +48,29 @@ def load_recipe(recipe_id: str) -> Recipe:
     return Recipe(**data)
 
 
+def delete_recipe(recipe_id: str) -> None:
+    """Removes a persisted recipe. Raises FileNotFoundError if it doesn't exist."""
+    path = RECIPES_DIR / f"{recipe_id}.json"
+    if not path.exists():
+        raise FileNotFoundError(f"No recipe {recipe_id!r} at {path}")
+    path.unlink()
+
+
 def compute_nutrition(
     recipe: Recipe,
     servings: float = 1,
     ingredients: Optional[dict[str, Ingredient]] = None,
+    user_id: Optional[str] = None,
 ) -> NutritionTotals:
     """Nutrition totals for `servings` servings of `recipe` (default: one).
 
-    Sums ingredient.per_100g_values * qty_g / 100 for every recipe
-    ingredient (qty is interpreted as grams -- see the Phase 2 summary's
-    design-decision note on unit handling), adds the oil_ghee contribution
-    via OIL_GHEE_PROFILES, then scales the whole-recipe total down to a
-    single serving (recipe.servings) and back up by the requested
-    `servings` count. Values are left unrounded so
+    Every RecipeIngredient's qty+unit is resolved to grams via
+    src.core.units.resolve_to_grams (household-unit-aware: pass user_id to
+    use that user's own katori/glass/etc. calibration, else the default
+    table) before being scaled by ingredient.per_100g_values. Adds the
+    oil_ghee contribution via OIL_GHEE_PROFILES, then scales the
+    whole-recipe total down to a single serving (recipe.servings) and back
+    up by the requested `servings` count. Values are left unrounded so
     nutrition(recipe, N) == nutrition(recipe, 1) * N exactly.
     """
     if ingredients is None:
@@ -74,7 +85,8 @@ def compute_nutrition(
                 f"Recipe {recipe.recipe_id!r} references unknown "
                 f"ingredient_id {ri.ingredient_id!r}"
             )
-        scale = ri.qty / 100
+        qty_g = resolve_to_grams(ingredient, ri.qty, ri.unit, user_id=user_id)
+        scale = qty_g / 100
         kcal += ingredient.energy_kcal_per_100g * scale
         protein += ingredient.protein_g_per_100g * scale
         fat += ingredient.fat_g_per_100g * scale

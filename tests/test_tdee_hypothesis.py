@@ -21,7 +21,7 @@ profile_strategy = st.builds(
         ["vegetarian", "vegan", "eggetarian", "non_vegetarian", "jain", "satvik", "custom"]
     ),
     eating_phase=st.sampled_from(
-        ["maintenance", "cutting", "bulking", "recomp", "reverse_diet", "refeed"]
+        ["maintenance", "cutting", "lean_bulk", "recomp", "reverse_diet", "refeed"]
     ),
 )
 
@@ -40,10 +40,10 @@ def test_cutting_strictly_less_than_maintenance(profile):
 
 
 @given(profile=profile_strategy)
-def test_bulking_strictly_greater_than_maintenance(profile):
-    bulking_target, _, _ = compute_calorie_target(profile.model_copy(update={"eating_phase": "bulking"}))
+def test_lean_bulk_strictly_greater_than_maintenance(profile):
+    lean_bulk_target, _, _ = compute_calorie_target(profile.model_copy(update={"eating_phase": "lean_bulk"}))
     maint_target, _, _ = compute_calorie_target(profile.model_copy(update={"eating_phase": "maintenance"}))
-    assert bulking_target > maint_target
+    assert lean_bulk_target > maint_target
 
 
 @given(profile=profile_strategy, deficit_fraction=st.floats(min_value=0.1, max_value=0.79))

@@ -56,6 +56,11 @@ class Ingredient(BaseModel):
     fiber_g_per_100g: float = Field(ge=0, le=100)
     source: IngredientSource
     category: IngredientCategory
+    # Grams per single piece (e.g. one egg, one paratha) -- optional since
+    # most ingredients are only ever measured by weight/volume. Required by
+    # src.core.units.resolve_to_grams whenever a RecipeIngredient uses
+    # unit="piece"; that function raises a clear error if it's missing.
+    per_piece_g: Optional[float] = Field(default=None, gt=0)
 
     @model_validator(mode="after")
     def _check_macro_sum(self) -> "Ingredient":
@@ -89,11 +94,25 @@ RegionTag = Literal["north", "south", "east", "west", "northeast", "pan_india", 
 MealType = Literal["breakfast", "lunch", "dinner", "snack", "beverage", "dessert", "fasting"]
 OilGheeType = Literal["oil", "ghee", "butter", "none"]
 
+# "custom" is a fixed sentinel meaning "already grams, no unit lookup" --
+# not a way to reference an arbitrarily-named calibrated unit. A named
+# custom unit (e.g. "my grandmother's bowl") would need its own field if
+# that's wanted later; see src/core/units.py's resolve_to_grams.
+UnitName = Literal[
+    "g", "ml", "katori", "small_katori", "glass", "large_glass", "tsp",
+    "tbsp", "mutthi", "plate", "piece", "custom",
+]
+
 
 class RecipeIngredient(BaseModel):
     ingredient_id: str = Field(min_length=1)
-    qty: float = Field(ge=0)
-    unit: str = Field(min_length=1)
+    # Strictly positive: Phase 2 allowed qty=0 as an explicit "inert
+    # ingredient" no-op, but Phase 3's household-unit resolution makes a
+    # zero-quantity entry meaningless (there's nothing to convert). "No
+    # ingredient" is now expressed by omitting it from the list, not by a
+    # zero-qty entry -- see beverages.py's builders for the guard pattern.
+    qty: float = Field(gt=0)
+    unit: UnitName
 
 
 class OilGhee(BaseModel):
@@ -157,7 +176,7 @@ DietaryPattern = Literal[
     "vegetarian", "vegan", "eggetarian", "non_vegetarian", "jain", "satvik", "custom"
 ]
 EatingPhase = Literal[
-    "maintenance", "cutting", "bulking", "recomp", "reverse_diet", "refeed"
+    "maintenance", "cutting", "lean_bulk", "recomp", "reverse_diet", "refeed"
 ]
 FastingProtocol = Literal[
     "none", "16_8", "18_6", "20_4", "omad", "5_2", "alternate_day",
@@ -213,7 +232,16 @@ class LogEntry(BaseModel):
     recipe_id: Optional[str] = None
     ingredient_id: Optional[str] = None
     qty: float = Field(gt=0)
+    # Free-form, not schemas.UnitName: for an ingredient_id entry this is a
+    # real household unit (resolved via src.core.units.resolve_to_grams);
+    # for a recipe_id entry (including beverages) it's the string
+    # "serving" and qty is a servings count, which isn't a unit
+    # resolve_to_grams has any business converting.
     unit: str = Field(min_length=1)
+    # Set by src.logging.engine.log_entry() at log time, not by the
+    # caller -- None here just means "not logged yet".
+    timestamp: Optional[datetime] = None
+    outside_eating_window: bool = False
 
     @model_validator(mode="after")
     def _check_exactly_one_reference(self) -> "LogEntry":
@@ -233,9 +261,52 @@ class NutritionTotals(BaseModel):
 
 
 class MealLog(BaseModel):
+    # One MealLog per user per calendar day. log_id is that day's
+    # "YYYY-MM-DD" string, which is also the filename stem in
+    # data/logs/{user_id}/{log_id}.json (src/logging/store.py).
     log_id: str = Field(min_length=1)
     user_id: str = Field(min_length=1)
+    # Last-modified time for this day's log, updated on every append/delete
+    # -- not a single "when this happened" moment (each entry carries its
+    # own timestamp for that).
     timestamp: datetime
     entries: list[LogEntry] = Field(min_length=1)
     computed_totals: NutritionTotals
     notes: Optional[str] = None
+    # Free-form day-level labels, e.g. "diwali", "festival", "travel" --
+    # src/insights/engine.py's festival_flex rule looks for a festival
+    # marker here to suppress calorie warnings on days the user has
+    # flagged as a celebration.
+    tags: list[str] = Field(default_factory=list)
+
+
+class QuarantinedLog(BaseModel):
+    """What a corrupted-on-disk log file loads into instead of crashing."""
+
+    path: str
+    raw_content: str
+    error: str
+    quarantined_at: datetime
+
+
+class DailyBreakdown(BaseModel):
+    date: str
+    totals: NutritionTotals
+    target_kcal: Optional[float] = None
+    adherence_pct: Optional[float] = None
+    entry_count: int = Field(ge=0)
+
+
+class WeeklySummary(BaseModel):
+    user_id: str = Field(min_length=1)
+    week_start_date: str
+    week_end_date: str
+    days: list[DailyBreakdown]
+    averages: NutritionTotals
+    target_adherence_pct: float = Field(ge=0, le=100)
+    streak_days: int = Field(ge=0)
+    notable_days: list[str] = Field(default_factory=list)
+    # Populated by the insights engine (src/insights/), not by
+    # src/logging/aggregation.py -- insights reads logs, so logging must
+    # not import insights (would be circular).
+    warnings: list[str] = Field(default_factory=list)
