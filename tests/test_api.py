@@ -492,6 +492,56 @@ def test_get_log_day_missing_returns_404(client):
     assert r.status_code == 404
 
 
+def test_post_day_tag(client):
+    post = client.post("/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"})
+    date = post.json()["log_id"]
+    r = client.post(f"/logs/apitest/day/{date}/tags", json={"tag": "diwali"})
+    assert r.status_code == 200
+    assert "diwali" in r.json()["tags"]
+
+
+def test_post_day_tag_missing_day_returns_404(client):
+    r = client.post("/logs/apitest/day/2020-01-01/tags", json={"tag": "diwali"})
+    assert r.status_code == 404
+
+
+def test_get_logged_dates(client):
+    post = client.post(
+        "/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"}
+    )
+    date = post.json()["log_id"]
+    r = client.get("/logs/apitest/dates")
+    assert r.status_code == 200
+    assert date in r.json()
+
+
+def test_get_logged_dates_empty_for_new_user(client):
+    r = client.get("/logs/nobody-yet/dates")
+    assert r.status_code == 200
+    assert r.json() == []
+
+
+def test_get_log_range(client):
+    post = client.post(
+        "/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"}
+    )
+    date = post.json()["log_id"]
+    r = client.get(f"/logs/apitest/range/{date}/{date}")
+    assert r.status_code == 200
+    assert len(r.json()) == 1
+
+
+def test_get_log_range_skips_missing_days(client):
+    r = client.get("/logs/nobody-yet/range/2020-01-01/2020-01-07")
+    assert r.status_code == 200
+    assert r.json() == []
+
+
+def test_get_log_range_invalid_date_returns_422(client):
+    r = client.get("/logs/apitest/range/not-a-date/2020-01-07")
+    assert r.status_code == 422
+
+
 def test_get_log_week(client):
     post = client.post(
         "/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"}
@@ -508,8 +558,8 @@ def test_get_log_week_invalid_date_returns_422(client):
 
 
 def test_post_log_entry_on_quarantined_day_returns_409(client):
-    # POST always logs to "now" (the route has no way to override the
-    # date), so the quarantined file has to be today's, not a fixed date.
+    # No timestamp in the request body -> defaults to "now", so the
+    # quarantined file has to be today's, not a fixed date.
     import src.logging.store as store
     from datetime import date
 

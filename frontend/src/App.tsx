@@ -6,13 +6,10 @@ import { Home } from "./screens/Home";
 import { Weekly } from "./screens/Weekly";
 import { Insights } from "./screens/Insights";
 import { Profile } from "./screens/Profile";
+import { HistoryLayout } from "./screens/history/HistoryLayout";
+import { Timeline } from "./screens/history/Timeline";
+import { ComingSoonTab } from "./screens/history/ComingSoonTab";
 import { getCurrentUserId } from "./lib/currentUser";
-
-// Temporary placeholder for routes not yet built in Part C -- replaced
-// screen by screen across the remaining Part C commits.
-function ComingSoon({ label }: { label: string }) {
-  return <div className="p-md text-body text-ink_body">{label} -- coming soon.</div>;
-}
 
 function RequireProfile({ children }: { children: React.ReactNode }) {
   if (!getCurrentUserId()) return <Navigate to="/onboarding" replace />;
@@ -35,7 +32,14 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/weekly" element={<Weekly />} />
             <Route path="/insights" element={<Insights />} />
-            <Route path="/history/*" element={<ComingSoon label="History" />} />
+            <Route path="/history" element={<HistoryLayout />}>
+              <Route index element={<Navigate to="/history/timeline" replace />} />
+              <Route path="timeline" element={<Timeline />} />
+              {/* Trends/Patterns/Export land in the next three Part D commits. */}
+              <Route path="trends" element={<ComingSoonTab label="Trends" />} />
+              <Route path="patterns" element={<ComingSoonTab label="Patterns" />} />
+              <Route path="export" element={<ComingSoonTab label="Export" />} />
+            </Route>
             <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>

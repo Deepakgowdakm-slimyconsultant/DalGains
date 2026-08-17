@@ -103,6 +103,13 @@ def get_day(user_id: str, date: str) -> Union[MealLog, QuarantinedLog, None]:
     return store.load_day(user_id, date)
 
 
+def list_logged_dates(user_id: str) -> list[str]:
+    """Every date (most recent first) this user has a log for -- lets a
+    caller (History's infinite-scroll timeline) page through exactly the
+    days that exist instead of guessing how far back to look."""
+    return store.list_dates(user_id)
+
+
 def tag_day(user_id: str, date: str, tag: str) -> MealLog:
     """Adds a free-form label (e.g. "diwali") to a day's log -- used by
     src/insights/engine.py's festival_flex rule. The day must already

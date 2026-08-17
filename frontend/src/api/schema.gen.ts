@@ -357,6 +357,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/logs/{user_id}/day/{date}/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Day Tag
+         * @description Adds a free-form tag (e.g. "diwali") to a day that already has at
+         *     least one entry -- e.g. History's "mark as a festival day" action.
+         *     Backs src.insights.engine's festival_flex rule and History's
+         *     festival-days filter, neither of which had any way to actually set a
+         *     tag before this route existed.
+         */
+        post: operations["post_day_tag_logs__user_id__day__date__tags_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/logs/{user_id}/dates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Logged Dates
+         * @description Every date this user has a log for, most recent first -- backs
+         *     History's infinite-scroll timeline (paging through real dates
+         *     instead of guessing how far back logs exist).
+         */
+        get: operations["get_logged_dates_logs__user_id__dates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/logs/{user_id}/range/{start}/{end}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Range
+         * @description All logs between start and end (both YYYY-MM-DD, inclusive) --
+         *     backs History's trend charts and personal-patterns stats, which need
+         *     many days at once rather than one day per request.
+         */
+        get: operations["get_range_logs__user_id__range__start___end__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/logs/{user_id}/week/{week_ending}": {
         parameters: {
             query?: never;
@@ -924,6 +992,11 @@ export interface components {
              * @enum {string}
              */
             unit: "g" | "ml" | "katori" | "small_katori" | "glass" | "large_glass" | "tsp" | "tbsp" | "mutthi" | "plate" | "piece" | "custom";
+        };
+        /** TagDayRequest */
+        TagDayRequest: {
+            /** Tag */
+            tag: string;
         };
         /** UserProfile */
         UserProfile: {
@@ -1860,6 +1933,106 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MealLog"] | components["schemas"]["QuarantinedLog"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_day_tag_logs__user_id__day__date__tags_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TagDayRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MealLog"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_logged_dates_logs__user_id__dates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_range_logs__user_id__range__start___end__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+                start: string;
+                end: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": (components["schemas"]["MealLog"] | components["schemas"]["QuarantinedLog"])[];
                 };
             };
             /** @description Validation Error */

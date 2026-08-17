@@ -2,11 +2,16 @@
 from typing import Optional, Union
 
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 from src.core.schemas import LogEntry, MealLog, QuarantinedLog, WeeklySummary
 from src.logging import engine
 
 router = APIRouter(prefix="/logs", tags=["logs"])
+
+
+class TagDayRequest(BaseModel):
+    tag: str
 
 
 @router.post("/{user_id}/entries", response_model=MealLog, status_code=201)
@@ -26,6 +31,41 @@ def get_day(user_id: str, date: str) -> Union[MealLog, QuarantinedLog]:
     if result is None:
         raise HTTPException(status_code=404, detail=f"No log for {user_id!r} on {date!r}")
     return result
+
+
+@router.post("/{user_id}/day/{date}/tags", response_model=MealLog)
+def post_day_tag(user_id: str, date: str, request: TagDayRequest) -> MealLog:
+    """Adds a free-form tag (e.g. "diwali") to a day that already has at
+    least one entry -- e.g. History's "mark as a festival day" action.
+    Backs src.insights.engine's festival_flex rule and History's
+    festival-days filter, neither of which had any way to actually set a
+    tag before this route existed.
+    """
+    try:
+        return engine.tag_day(user_id, date, request.tag)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+
+
+@router.get("/{user_id}/dates", response_model=list[str])
+def get_logged_dates(user_id: str) -> list[str]:
+    """Every date this user has a log for, most recent first -- backs
+    History's infinite-scroll timeline (paging through real dates
+    instead of guessing how far back logs exist)."""
+    return engine.list_logged_dates(user_id)
+
+
+@router.get("/{user_id}/range/{start}/{end}", response_model=list[Union[MealLog, QuarantinedLog]])
+def get_range(user_id: str, start: str, end: str) -> list[Union[MealLog, QuarantinedLog]]:
+    """All logs between start and end (both YYYY-MM-DD, inclusive) --
+    backs History's trend charts and personal-patterns stats, which need
+    many days at once rather than one day per request."""
+    try:
+        return engine.get_range(user_id, start, end)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
 
 
 @router.get("/{user_id}/week/{week_ending}", response_model=WeeklySummary)

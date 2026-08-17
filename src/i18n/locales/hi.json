@@ -114,5 +114,20 @@
   "profile.about": "जानकारी",
   "profile.license_notice": "DalGains एक मुफ़्त, ओपन-सोर्स सॉफ़्टवेयर है जो AGPL-3.0 के तहत लाइसेंस प्राप्त है। पोषण डेटा IFCT 2017 (भारतीय खाद्य संघटन तालिकाएं, ICMR-राष्ट्रीय पोषण संस्थान) से है, और USDA डेटा केवल उन सामग्रियों के लिए उपयोग किया जाता है जो IFCT में शामिल नहीं हैं।",
   "profile.medical_disclaimer": "यह ऐप चिकित्सीय सलाह नहीं है। अपने लिए विशेष चिकित्सीय या पोषण मार्गदर्शन हेतु किसी डॉक्टर या पंजीकृत आहार विशेषज्ञ से बात करें।",
-  "profile.default_label": "डिफ़ॉल्ट"
+  "profile.default_label": "डिफ़ॉल्ट",
+  "history.tab_timeline": "टाइमलाइन",
+  "history.tab_trends": "रुझान",
+  "history.tab_patterns": "पैटर्न",
+  "history.tab_export": "निर्यात",
+  "history.tabs_label": "इतिहास दृश्य",
+  "history.empty_state": "दर्ज करते रहें -- 7, 14 और 30 दिनों पर जानकारियां खुलती हैं",
+  "history.filter.high_protein": "उच्च प्रोटीन",
+  "history.filter.over_target": "लक्ष्य से ज़्यादा",
+  "history.filter.under_target": "लक्ष्य से कम",
+  "history.filter.on_target": "लक्ष्य के अनुरूप",
+  "history.filter.festival_days": "त्योहार के दिन",
+  "history.filter.fasting_days": "उपवास के दिन",
+  "history.filter.beverages_only": "केवल पेय पदार्थ",
+  "history.no_matching_days": "इस फ़िल्टर से अभी कोई दिन मेल नहीं खाता",
+  "history.load_more": "और लोड करें"
 }

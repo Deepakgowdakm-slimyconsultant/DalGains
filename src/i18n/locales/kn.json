@@ -114,5 +114,20 @@
   "profile.about": "ಬಗ್ಗೆ",
   "profile.license_notice": "DalGains AGPL-3.0 ಅಡಿಯಲ್ಲಿ ಪರವಾನಗಿ ಪಡೆದ ಉಚಿತ, ಓಪನ್-ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್ ಆಗಿದೆ. ಪೌಷ್ಟಿಕಾಂಶದ ಡೇಟಾ IFCT 2017 (ಭಾರತೀಯ ಆಹಾರ ಸಂಯೋಜನೆ ಕೋಷ್ಟಕಗಳು, ICMR-ರಾಷ್ಟ್ರೀಯ ಪೌಷ್ಟಿಕಾಂಶ ಸಂಸ್ಥೆ) ಇಂದ ಬಂದಿದೆ, USDA ಡೇಟಾವನ್ನು IFCT ಒಳಗೊಳ್ಳದ ಪದಾರ್ಥಗಳಿಗೆ ಮಾತ್ರ ಬಳಸಲಾಗುತ್ತದೆ.",
   "profile.medical_disclaimer": "ಈ ಆ್ಯಪ್ ವೈದ್ಯಕೀಯ ಸಲಹೆಯಲ್ಲ. ನಿಮಗೆ ನಿರ್ದಿಷ್ಟವಾದ ವೈದ್ಯಕೀಯ ಅಥವಾ ಪೌಷ್ಟಿಕಾಂಶ ಮಾರ್ಗದರ್ಶನಕ್ಕಾಗಿ ವೈದ್ಯರು ಅಥವಾ ನೋಂದಾಯಿತ ಆಹಾರ ತಜ್ಞರೊಂದಿಗೆ ಮಾತನಾಡಿ.",
-  "profile.default_label": "ಡೀಫಾಲ್ಟ್"
+  "profile.default_label": "ಡೀಫಾಲ್ಟ್",
+  "history.tab_timeline": "ಟೈಮ್‌ಲೈನ್",
+  "history.tab_trends": "ಪ್ರವೃತ್ತಿಗಳು",
+  "history.tab_patterns": "ಮಾದರಿಗಳು",
+  "history.tab_export": "ರಫ್ತು",
+  "history.tabs_label": "ಇತಿಹಾಸ ವೀಕ್ಷಣೆಗಳು",
+  "history.empty_state": "ದಾಖಲಿಸುತ್ತಿರಿ -- 7, 14 ಮತ್ತು 30 ದಿನಗಳಲ್ಲಿ ಒಳನೋಟಗಳು ತೆರೆದುಕೊಳ್ಳುತ್ತವೆ",
+  "history.filter.high_protein": "ಹೆಚ್ಚು ಪ್ರೋಟೀನ್",
+  "history.filter.over_target": "ಗುರಿಗಿಂತ ಹೆಚ್ಚು",
+  "history.filter.under_target": "ಗುರಿಗಿಂತ ಕಡಿಮೆ",
+  "history.filter.on_target": "ಗುರಿಯಂತೆ",
+  "history.filter.festival_days": "ಹಬ್ಬದ ದಿನಗಳು",
+  "history.filter.fasting_days": "ಉಪವಾಸದ ದಿನಗಳು",
+  "history.filter.beverages_only": "ಪಾನೀಯಗಳು ಮಾತ್ರ",
+  "history.no_matching_days": "ಈ ಫಿಲ್ಟರ್‌ಗೆ ಇನ್ನೂ ಯಾವುದೇ ದಿನಗಳು ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ",
+  "history.load_more": "ಇನ್ನಷ್ಟು ಲೋಡ್ ಮಾಡಿ"
 }
