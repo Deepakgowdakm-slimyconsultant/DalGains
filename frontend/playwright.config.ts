@@ -13,6 +13,10 @@ export default defineConfig({
   // surfaced as flaky timeouts under the default multi-worker scheduling.
   workers: 1,
   retries: 0,
+  // Default 30s is tight once onboarding (9-step wizard) and an axe-core
+  // scan stack up in this environment's headless Chromium, which runs
+  // noticeably slower than a typical dev machine.
+  timeout: 60_000,
   reporter: [["list"]],
   use: {
     baseURL: "http://localhost:5173",
