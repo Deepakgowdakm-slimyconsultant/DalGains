@@ -151,5 +151,16 @@
   "history.week_callouts": "ಗಮನಾರ್ಹ ವಾರಗಳು",
   "history.best_week": "ಅತ್ಯುತ್ತಮ ವಾರ",
   "history.toughest_week": "ಅತ್ಯಂತ ಕಷ್ಟದ ವಾರ",
-  "history.week_of": "{{date}} ರ ವಾರ"
+  "history.week_of": "{{date}} ರ ವಾರ",
+  "history.export_range": "ದಿನಾಂಕ ವ್ಯಾಪ್ತಿ",
+  "history.export_to": "ಗೆ",
+  "history.export_day_count": "ಈ ವ್ಯಾಪ್ತಿಯಲ್ಲಿ {{count}} ದಾಖಲಾದ ದಿನಗಳು",
+  "history.export_title": "ರಫ್ತು",
+  "history.export_json": "JSON ಆಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
+  "history.export_csv": "CSV ಆಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
+  "history.export_pdf": "ಪ್ರಿಂಟ್ / PDF ಆಗಿ ಉಳಿಸಿ",
+  "history.share_title": "ಆಹಾರ ತಜ್ಞರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ",
+  "history.share_note": "ಸರಳ-ಪಠ್ಯ ಸಾರಾಂಶ ಮಾತ್ರ ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತದೆ -- ನಿಮ್ಮ ಕಚ್ಚಾ ದೈನಂದಿನ ದಾಖಲೆಗಳಲ್ಲ. ಅದನ್ನು ನೀವೇ ಇಮೇಲ್ ಅಥವಾ ಸಂದೇಶಕ್ಕೆ ಲಗತ್ತಿಸಿ; ನೇರ ಹಂಚಿಕೆ ಲಿಂಕ್‌ಗಳು ನಂತರ ಬರುತ್ತವೆ.",
+  "history.share_button": "ಹಂಚಿಕೊಳ್ಳಲು ಸಾರಾಂಶವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
+  "history.export_date_column": "ದಿನಾಂಕ"
 }

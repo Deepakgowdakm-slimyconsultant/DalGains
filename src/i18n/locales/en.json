@@ -151,5 +151,16 @@
   "history.week_callouts": "Notable weeks",
   "history.best_week": "Best week",
   "history.toughest_week": "Toughest week",
-  "history.week_of": "Week of {{date}}"
+  "history.week_of": "Week of {{date}}",
+  "history.export_range": "Date range",
+  "history.export_to": "to",
+  "history.export_day_count": "{{count}} logged days in this range",
+  "history.export_title": "Export",
+  "history.export_json": "Download as JSON",
+  "history.export_csv": "Download as CSV",
+  "history.export_pdf": "Print / save as PDF",
+  "history.share_title": "Share with a dietitian",
+  "history.share_note": "Downloads a plain-text summary only -- not your raw daily logs. Attach it to an email or message yourself; direct sharing links are coming later.",
+  "history.share_button": "Download summary to share",
+  "history.export_date_column": "Date"
 }

@@ -151,5 +151,16 @@
   "history.week_callouts": "खास सप्ताह",
   "history.best_week": "सबसे अच्छा सप्ताह",
   "history.toughest_week": "सबसे कठिन सप्ताह",
-  "history.week_of": "{{date}} का सप्ताह"
+  "history.week_of": "{{date}} का सप्ताह",
+  "history.export_range": "तारीख़ सीमा",
+  "history.export_to": "से",
+  "history.export_day_count": "इस सीमा में {{count}} दर्ज किए गए दिन",
+  "history.export_title": "निर्यात",
+  "history.export_json": "JSON के रूप में डाउनलोड करें",
+  "history.export_csv": "CSV के रूप में डाउनलोड करें",
+  "history.export_pdf": "प्रिंट करें / PDF के रूप में सहेजें",
+  "history.share_title": "आहार विशेषज्ञ के साथ साझा करें",
+  "history.share_note": "केवल एक सादा-टेक्स्ट सारांश डाउनलोड होता है -- आपके कच्चे दैनिक लॉग नहीं। इसे स्वयं ईमेल या संदेश से जोड़ें; सीधे साझा करने के लिंक बाद में आएंगे।",
+  "history.share_button": "साझा करने के लिए सारांश डाउनलोड करें",
+  "history.export_date_column": "तारीख़"
 }

@@ -28,7 +28,7 @@ export function AppShell() {
       </div>
       <nav
         aria-label={t("nav.label")}
-        className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-app justify-around border-t border-tamarind_brown/15 bg-signboard_white pb-[env(safe-area-inset-bottom)] dark:bg-dark-surface_primary"
+        className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-app justify-around border-t border-tamarind_brown/15 bg-signboard_white pb-[env(safe-area-inset-bottom)] print:hidden dark:bg-dark-surface_primary"
       >
         {NAV_ITEMS.map((item) => (
           <NavLink

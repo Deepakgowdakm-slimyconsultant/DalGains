@@ -17,8 +17,10 @@ export function HistoryLayout() {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-md p-md pb-32">
-      <SignboardHeader title={t("nav.history")} />
-      <nav aria-label={t("history.tabs_label")} className="flex gap-xs overflow-x-auto">
+      <div className="print:hidden">
+        <SignboardHeader title={t("nav.history")} />
+      </div>
+      <nav aria-label={t("history.tabs_label")} className="flex gap-xs overflow-x-auto print:hidden">
         {TABS.map((tab) => (
           <NavLink
             key={tab.to}

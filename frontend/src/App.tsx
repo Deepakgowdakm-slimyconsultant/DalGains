@@ -10,7 +10,7 @@ import { HistoryLayout } from "./screens/history/HistoryLayout";
 import { Timeline } from "./screens/history/Timeline";
 import { Trends } from "./screens/history/Trends";
 import { Patterns } from "./screens/history/Patterns";
-import { ComingSoonTab } from "./screens/history/ComingSoonTab";
+import { Export } from "./screens/history/Export";
 import { getCurrentUserId } from "./lib/currentUser";
 
 function RequireProfile({ children }: { children: React.ReactNode }) {
@@ -39,8 +39,7 @@ function App() {
               <Route path="timeline" element={<Timeline />} />
               <Route path="trends" element={<Trends />} />
               <Route path="patterns" element={<Patterns />} />
-              {/* Export lands in the next Part D commit. */}
-              <Route path="export" element={<ComingSoonTab label="Export" />} />
+              <Route path="export" element={<Export />} />
             </Route>
             <Route path="/profile" element={<Profile />} />
           </Route>
