@@ -92,5 +92,11 @@
   "logging.preview_kcal": "Calories",
   "logging.preview_protein": "Protein",
   "logging.preview_fat": "Fat",
-  "logging.preview_carbs": "Carbs"
+  "logging.preview_carbs": "Carbs",
+  "weekly.title": "This week",
+  "weekly.loading": "Loading your week...",
+  "weekly.adherence": "On-target days",
+  "weekly.streak": "Day streak",
+  "weekly.averages": "Weekly averages",
+  "weekly.notable_days": "Notable days"
 }

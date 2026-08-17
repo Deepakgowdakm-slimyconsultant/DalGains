@@ -92,5 +92,11 @@
   "logging.preview_kcal": "ಕ್ಯಾಲೊರಿಗಳು",
   "logging.preview_protein": "ಪ್ರೋಟೀನ್",
   "logging.preview_fat": "ಕೊಬ್ಬು",
-  "logging.preview_carbs": "ಕಾರ್ಬ್ಸ್"
+  "logging.preview_carbs": "ಕಾರ್ಬ್ಸ್",
+  "weekly.title": "ಈ ವಾರ",
+  "weekly.loading": "ನಿಮ್ಮ ವಾರವನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...",
+  "weekly.adherence": "ಗುರಿಯಂತೆ ಇದ್ದ ದಿನಗಳು",
+  "weekly.streak": "ಸತತ ದಿನಗಳು",
+  "weekly.averages": "ಸಾಪ್ತಾಹಿಕ ಸರಾಸರಿ",
+  "weekly.notable_days": "ಗಮನಾರ್ಹ ದಿನಗಳು"
 }

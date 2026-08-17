@@ -92,5 +92,11 @@
   "logging.preview_kcal": "कैलोरी",
   "logging.preview_protein": "प्रोटीन",
   "logging.preview_fat": "वसा",
-  "logging.preview_carbs": "कार्ब्स"
+  "logging.preview_carbs": "कार्ब्स",
+  "weekly.title": "इस सप्ताह",
+  "weekly.loading": "आपका सप्ताह लोड हो रहा है...",
+  "weekly.adherence": "लक्ष्य के अनुरूप दिन",
+  "weekly.streak": "दिनों की लगातार गिनती",
+  "weekly.averages": "साप्ताहिक औसत",
+  "weekly.notable_days": "खास दिन"
 }

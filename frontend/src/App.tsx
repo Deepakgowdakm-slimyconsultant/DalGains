@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./layout/AppShell";
 import { Onboarding } from "./screens/Onboarding";
 import { Home } from "./screens/Home";
+import { Weekly } from "./screens/Weekly";
 import { getCurrentUserId } from "./lib/currentUser";
 
 // Temporary placeholder for routes not yet built in Part C -- replaced
@@ -30,7 +31,7 @@ function App() {
             }
           >
             <Route path="/" element={<Home />} />
-            <Route path="/weekly" element={<ComingSoon label="Weekly" />} />
+            <Route path="/weekly" element={<Weekly />} />
             <Route path="/insights" element={<ComingSoon label="Insights" />} />
             <Route path="/history/*" element={<ComingSoon label="History" />} />
             <Route path="/profile" element={<ComingSoon label="Profile" />} />
