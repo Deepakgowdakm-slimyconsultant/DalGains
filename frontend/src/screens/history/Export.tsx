@@ -109,6 +109,7 @@ export function Export() {
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
+            aria-label={t("history.export_start_date")}
             className="min-h-tap-min flex-1 rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-sm text-body text-ink_body"
           />
           <span className="text-body text-ink_body">{t("history.export_to")}</span>
@@ -116,6 +117,7 @@ export function Export() {
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
+            aria-label={t("history.export_end_date")}
             className="min-h-tap-min flex-1 rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-sm text-body text-ink_body"
           />
         </div>

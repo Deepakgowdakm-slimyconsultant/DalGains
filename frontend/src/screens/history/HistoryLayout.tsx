@@ -27,7 +27,7 @@ export function HistoryLayout() {
             to={tab.to}
             className={({ isActive }) =>
               "min-h-tap-min shrink-0 rounded-full border px-md py-xs text-caption font-medium " +
-              (isActive ? "border-accent_action bg-accent_action text-signboard_white" : "border-tamarind_brown/30 text-ink_body")
+              (isActive ? "border-accent_action bg-accent_action text-coal_black" : "border-tamarind_brown/30 text-ink_body")
             }
           >
             {t(tab.labelKey)}

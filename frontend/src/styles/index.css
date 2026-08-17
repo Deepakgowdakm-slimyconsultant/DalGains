@@ -15,3 +15,61 @@
     @apply mx-auto min-h-dvh max-w-app;
   }
 }
+
+/* Elderly-usability pass (Phase 4 Part F). Deliberately unlayered (not
+   inside @layer utilities/base) so it wins over the Tailwind-generated
+   .text-body utility at equal selector specificity, per Tailwind's
+   cascade-layer ordering -- unlayered rules always beat layered ones. */
+
+/* typography.json's body size (16px) is the documented desktop-scale
+   default; every phone-width viewport (this app's actual audience,
+   given the 480px-max-width mobile-first shell) gets 18px instead. */
+@media (max-width: 600px) {
+  .text-body {
+    font-size: 18px;
+  }
+}
+
+/* Big text mode: toggled in Profile/Settings, persisted like dark mode
+   (src/lib/theme.ts). Scales the type scale up (body 22px, hero 56px,
+   per spec) and the most commonly-used spacing utilities up by roughly
+   the same ratio -- not an exhaustive rescale of every spacing utility
+   in the app, but the ones that show up on nearly every screen (card
+   padding, stacked-content gaps). */
+html.big-text .text-caption {
+  font-size: 18px;
+  line-height: 1.4;
+}
+html.big-text .text-body {
+  font-size: 22px;
+  line-height: 1.5;
+}
+html.big-text .text-headline {
+  font-size: 28px;
+  line-height: 1.25;
+}
+html.big-text .text-display {
+  font-size: 34px;
+  line-height: 1.15;
+}
+html.big-text .text-hero {
+  font-size: 56px;
+  line-height: 1.1;
+}
+html.big-text .p-md {
+  padding: 20px;
+}
+html.big-text .px-md {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+html.big-text .py-md {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+html.big-text .gap-sm {
+  gap: 12px;
+}
+html.big-text .gap-md {
+  gap: 20px;
+}

@@ -1,22 +1,37 @@
-const STORAGE_KEY = "dalgains_dark_mode";
+const DARK_KEY = "dalgains_dark_mode";
+const BIG_TEXT_KEY = "dalgains_big_text";
 
-function apply(dark: boolean): void {
+function applyDark(dark: boolean): void {
   document.documentElement.classList.toggle("dark", dark);
 }
 
+function applyBigText(bigText: boolean): void {
+  document.documentElement.classList.toggle("big-text", bigText);
+}
+
 export function isDarkModeOn(): boolean {
-  const stored = localStorage.getItem(STORAGE_KEY);
+  const stored = localStorage.getItem(DARK_KEY);
   if (stored !== null) return stored === "true";
   return window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
 }
 
 export function setDarkMode(dark: boolean): void {
-  localStorage.setItem(STORAGE_KEY, String(dark));
-  apply(dark);
+  localStorage.setItem(DARK_KEY, String(dark));
+  applyDark(dark);
 }
 
-// Called once at app startup so the class is right before first paint,
-// not just after a user visits Profile and toggles something.
+export function isBigTextOn(): boolean {
+  return localStorage.getItem(BIG_TEXT_KEY) === "true";
+}
+
+export function setBigText(bigText: boolean): void {
+  localStorage.setItem(BIG_TEXT_KEY, String(bigText));
+  applyBigText(bigText);
+}
+
+// Called once at app startup so both classes are right before first
+// paint, not just after a user visits Profile and toggles something.
 export function initTheme(): void {
-  apply(isDarkModeOn());
+  applyDark(isDarkModeOn());
+  applyBigText(isBigTextOn());
 }

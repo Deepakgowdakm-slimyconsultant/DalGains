@@ -131,7 +131,12 @@ export function Timeline() {
                   }}
                   className="rounded-md bg-surface_primary p-md"
                 >
-                  <button type="button" onClick={() => toggleExpanded(log.log_id)} className="flex w-full items-center justify-between gap-sm text-left">
+                  <button
+                    type="button"
+                    onClick={() => toggleExpanded(log.log_id)}
+                    aria-expanded={isExpanded}
+                    className="flex min-h-tap-min w-full items-center justify-between gap-sm text-left"
+                  >
                     <span className="flex items-center gap-sm">
                       <span className={`h-3 w-3 shrink-0 rounded-full ${adherenceDotClass(log.computed_totals.energy_kcal, plan?.daily_kcal ?? null)}`} aria-hidden="true" />
                       <span className="text-body font-medium text-ink_body">{dayLabel(log.log_id)}</span>

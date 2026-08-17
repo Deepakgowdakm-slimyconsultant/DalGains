@@ -5,6 +5,7 @@ import { ThaliCard } from "../components/ThaliCard";
 import { SpiceChip } from "../components/SpiceChip";
 import { DhabaButton } from "../components/DhabaButton";
 import { api } from "../api/client";
+import { useVoiceInput } from "../lib/useVoiceInput";
 import type { components } from "../api/schema.gen";
 
 type Recipe = components["schemas"]["Recipe"];
@@ -14,6 +15,9 @@ type NutritionTotals = components["schemas"]["NutritionTotals"];
 type SearchResult = { kind: "recipe"; item: Recipe } | { kind: "ingredient"; item: Ingredient };
 
 const HOUSEHOLD_UNITS = ["katori", "small_katori", "glass", "tsp", "tbsp", "mutthi", "plate", "piece"] as const;
+
+// Web Speech API locale tags, keyed by our i18n locale codes.
+const VOICE_LOCALE: Record<string, string> = { en: "en-IN", hi: "hi-IN", kn: "kn-IN" };
 
 const MEAL_SLOTS = [
   { key: "breakfast", hour: 8 },
@@ -35,9 +39,10 @@ interface LogEntryFlowProps {
  * unit -> when -> confirm+preview. Every value here is editable right up
  * until the final POST -- nothing is silently accepted (CLAUDE.md). */
 export function LogEntryFlow({ open, userId, onClose, onLogged }: LogEntryFlowProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [step, setStep] = useState<FlowStep>("search");
   const [query, setQuery] = useState("");
+  const voice = useVoiceInput((transcript) => setQuery(transcript));
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [ingredientResults, setIngredientResults] = useState<Ingredient[]>([]);
   const [selected, setSelected] = useState<SearchResult | null>(null);
@@ -173,14 +178,27 @@ export function LogEntryFlow({ open, userId, onClose, onLogged }: LogEntryFlowPr
     <FloatingLogSheet open={open} title={title} onClose={onClose}>
       {step === "search" && (
         <div className="flex flex-col gap-sm p-md">
-          <input
-            type="text"
-            autoFocus
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("logging.search_placeholder")}
-            className="min-h-tap-primary w-full rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-md text-body text-ink_body"
-          />
+          <div className="flex items-center gap-sm">
+            <input
+              type="text"
+              autoFocus
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("logging.search_placeholder")}
+              className="min-h-tap-primary w-full flex-1 rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-md text-body text-ink_body"
+            />
+            {voice.isSupported && (
+              <button
+                type="button"
+                onClick={() => (voice.isListening ? voice.stop() : voice.start(VOICE_LOCALE[i18n.language] ?? "en-IN"))}
+                aria-label={voice.isListening ? t("logging.voice_stop") : t("logging.voice_start")}
+                aria-pressed={voice.isListening}
+                className={`flex min-h-tap-primary min-w-tap-primary shrink-0 items-center justify-center rounded-full border-2 border-accent_action text-headline ${voice.isListening ? "bg-accent_action text-coal_black" : "text-accent_action_text"}`}
+              >
+                🎤
+              </button>
+            )}
+          </div>
           <div className="flex flex-col gap-xs">
             {recipes.map((r) => (
               <ThaliCard key={r.recipe_id} title={r.name} subtitle={r.region_tag} icon={<span>🍽️</span>} onClick={() => selectResult({ kind: "recipe", item: r })} />
@@ -213,7 +231,7 @@ export function LogEntryFlow({ open, userId, onClose, onLogged }: LogEntryFlowPr
             <button
               type="button"
               onClick={() => setQty((q) => Math.max(0.5, q - 0.5))}
-              className="flex min-h-tap-min min-w-tap-min items-center justify-center rounded-full border-2 border-accent_action text-headline text-accent_action"
+              className="flex min-h-tap-min min-w-tap-min items-center justify-center rounded-full border-2 border-accent_action text-headline text-accent_action_text"
               aria-label={t("logging.decrease_qty")}
             >
               &minus;
@@ -224,7 +242,7 @@ export function LogEntryFlow({ open, userId, onClose, onLogged }: LogEntryFlowPr
             <button
               type="button"
               onClick={() => setQty((q) => q + 0.5)}
-              className="flex min-h-tap-min min-w-tap-min items-center justify-center rounded-full border-2 border-accent_action text-headline text-accent_action"
+              className="flex min-h-tap-min min-w-tap-min items-center justify-center rounded-full border-2 border-accent_action text-headline text-accent_action_text"
               aria-label={t("logging.increase_qty")}
             >
               +
@@ -268,7 +286,7 @@ export function LogEntryFlow({ open, userId, onClose, onLogged }: LogEntryFlowPr
           ) : (
             <p className="text-body text-ink_body">{t("logging.loading_preview")}</p>
           )}
-          {error && <p className="text-caption text-accent_warning">{error}</p>}
+          {error && <p className="text-caption text-accent_warning_text">{error}</p>}
           <div className="flex gap-sm">
             <DhabaButton variant="secondary" onClick={() => setStep("unit")}>
               {t("common.edit")}

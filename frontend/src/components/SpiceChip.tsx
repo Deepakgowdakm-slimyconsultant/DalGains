@@ -12,9 +12,13 @@ interface SpiceChipProps {
 // Full literal class strings per (tone, selected) combination -- required
 // so Tailwind's static scanner can see them (see KatoriProgressRing's
 // note on template-interpolated class names not being detected).
+//
+// light/selected's text is coal_black, not signboard_white -- white on
+// this saffron_orange only hits 2.77:1 (design/contrast-report.md);
+// dark text on it passes at 5.9:1.
 const TONE_CLASSES: Record<"light" | "dark", { selected: string; unselected: string }> = {
   light: {
-    selected: "border-accent_action bg-accent_action text-signboard_white",
+    selected: "border-accent_action bg-accent_action text-coal_black",
     unselected: "border-tamarind_brown/30 bg-transparent text-ink_body",
   },
   dark: {

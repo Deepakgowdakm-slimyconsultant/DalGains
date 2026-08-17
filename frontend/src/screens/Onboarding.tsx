@@ -62,7 +62,7 @@ function Step({
   continueLabel: string;
 }) {
   return (
-    <div className="flex min-h-dvh flex-col gap-lg p-md">
+    <main className="flex min-h-dvh flex-col gap-lg p-md">
       <SignboardHeader title={title} subtitle={subtitle} />
       <div className="flex-1">{children}</div>
       <div className="flex gap-sm">
@@ -77,7 +77,7 @@ function Step({
           </DhabaButton>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -245,7 +245,7 @@ export function Onboarding() {
             onChange={(v) => setDraft((d) => ({ ...d, fasting_protocol: v }))}
             formatLabel={(opt) => FASTING_LABELS[opt as string] ?? (opt as string)}
           />
-          {error && <p className="mt-md text-caption text-accent_warning">{error}</p>}
+          {error && <p className="mt-md text-caption text-accent_warning_text">{error}</p>}
         </Step>
       );
     case "plan_summary":

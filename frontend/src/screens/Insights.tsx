@@ -18,8 +18,19 @@ const INSIGHT_BODY_FIELD = { en: "body_en", hi: "body_hi", kn: "body_kn" } as co
 const SEVERITY_BADGE_CLASS: Record<Insight["severity"], string> = {
   urgent: "bg-accent_warning text-signboard_white",
   warn: "bg-accent_warning/80 text-signboard_white",
-  suggest: "bg-accent_celebration text-ink_body",
-  info: "bg-tamarind_brown/15 text-ink_body",
+  // text-coal_black, not text-ink_body: accent_celebration (turmeric_
+  // yellow) doesn't change between modes, but ink_body does -- in dark
+  // mode it resolves to dhaba_cream (light), which is only 1.78:1
+  // against turmeric_yellow. coal_black is mode-invariant and passes at
+  // 7.84:1 regardless of theme, same reasoning as DhabaButton/SpiceChip
+  // primary variants (design/contrast-report.md).
+  suggest: "bg-accent_celebration text-coal_black",
+  // text-ink_hero, not text-ink_body: this badge sits on the signboard
+  // card's tamarind_brown, and the /15 opacity barely tints that, so
+  // dark ink_body text only hit 2.04:1 against the effective background
+  // (design/contrast-report.md) -- needs light text like the other
+  // badges, not dark.
+  info: "bg-tamarind_brown/15 text-ink_hero",
 };
 
 function loadDismissed(): string[] {

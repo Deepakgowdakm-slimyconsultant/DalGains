@@ -9,7 +9,7 @@ import { clearCurrentUserId, getCurrentUserId } from "../lib/currentUser";
 import type { components } from "../api/schema.gen";
 import type { Locale } from "../i18n";
 import { SUPPORTED_LOCALES } from "../i18n";
-import { isDarkModeOn, setDarkMode } from "../lib/theme";
+import { isBigTextOn, isDarkModeOn, setBigText, setDarkMode } from "../lib/theme";
 
 type UserProfile = components["schemas"]["UserProfile"];
 type HouseholdUnit = components["schemas"]["HouseholdUnit"];
@@ -30,6 +30,24 @@ function SectionHeading({ children }: { children: string }) {
   return <h2 className="mb-sm text-headline font-display-latin text-ink_body">{children}</h2>;
 }
 
+function ToggleRow({ label, on, onToggle }: { label: string; on: boolean; onToggle: () => void }) {
+  return (
+    <div className="flex items-center justify-between rounded-md bg-surface_primary p-md">
+      <span className="text-body text-ink_body">{label}</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={on}
+        aria-label={label}
+        onClick={onToggle}
+        className={`flex min-h-tap-min w-16 items-center rounded-full p-1 transition-colors ${on ? "bg-accent_action justify-end" : "bg-tamarind_brown/30 justify-start"}`}
+      >
+        <span className="h-6 w-6 rounded-full bg-signboard_white" />
+      </button>
+    </div>
+  );
+}
+
 export function Profile() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -39,6 +57,7 @@ export function Profile() {
   const [calibratingUnit, setCalibratingUnit] = useState<string | null>(null);
   const [calibrationInput, setCalibrationInput] = useState("");
   const [darkMode, setDarkModeState] = useState(isDarkModeOn());
+  const [bigText, setBigTextState] = useState(isBigTextOn());
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [savedMessage, setSavedMessage] = useState(false);
 
@@ -77,6 +96,12 @@ export function Profile() {
     const next = !darkMode;
     setDarkModeState(next);
     setDarkMode(next);
+  }
+
+  function toggleBigText() {
+    const next = !bigText;
+    setBigTextState(next);
+    setBigText(next);
   }
 
   function exportData() {
@@ -157,7 +182,7 @@ export function Profile() {
                       setCalibratingUnit(unitName);
                       setCalibrationInput(String(calibrated?.volume_ml ?? DEFAULT_UNIT_ML[unitName]));
                     }}
-                    className="min-h-tap-min text-caption text-accent_action underline"
+                    className="min-h-tap-min text-caption text-accent_action_text underline"
                   >
                     {calibrated ? `${calibrated.volume_ml}ml` : `${DEFAULT_UNIT_ML[unitName]}ml (${t("profile.default_label")})`}
                   </button>
@@ -177,17 +202,9 @@ export function Profile() {
         </div>
       </section>
 
-      <section className="flex items-center justify-between rounded-md bg-surface_primary p-md">
-        <span className="text-body text-ink_body">{t("profile.dark_mode")}</span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={darkMode}
-          onClick={toggleDarkMode}
-          className={`flex min-h-tap-min w-16 items-center rounded-full p-1 transition-colors ${darkMode ? "bg-accent_action justify-end" : "bg-tamarind_brown/30 justify-start"}`}
-        >
-          <span className="h-6 w-6 rounded-full bg-signboard_white" />
-        </button>
+      <section className="flex flex-col gap-sm">
+        <ToggleRow label={t("profile.dark_mode")} on={darkMode} onToggle={toggleDarkMode} />
+        <ToggleRow label={t("profile.big_text_mode")} on={bigText} onToggle={toggleBigText} />
       </section>
 
       <section>

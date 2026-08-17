@@ -23,9 +23,9 @@ export function AppShell() {
   const { t } = useTranslation();
   return (
     <div className="flex min-h-dvh flex-col bg-surface_primary">
-      <div className="flex-1 overflow-y-auto pb-24">
+      <main className="flex-1 overflow-y-auto pb-24">
         <Outlet />
-      </div>
+      </main>
       <nav
         aria-label={t("nav.label")}
         className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-app justify-around border-t border-tamarind_brown/15 bg-surface_card pb-[env(safe-area-inset-bottom)] print:hidden"
@@ -37,7 +37,7 @@ export function AppShell() {
             end={item.to === "/"}
             className={({ isActive }) =>
               "flex min-h-tap-primary flex-1 flex-col items-center justify-center gap-0.5 text-caption " +
-              (isActive ? "text-accent_action font-semibold" : "text-ink_body/70")
+              (isActive ? "text-accent_action_text font-semibold" : "text-ink_body/70")
             }
           >
             <span aria-hidden="true" className="text-headline leading-none">

@@ -46,7 +46,12 @@ export function Weekly() {
     <div className="flex flex-col gap-lg p-md pb-32">
       <SignboardHeader title={t("weekly.title")} subtitle={`${summary.week_start_date} - ${summary.week_end_date}`} />
 
-      <div className="flex justify-between gap-xs overflow-x-auto rounded-md bg-surface_primary p-md">
+      <div
+        className="flex justify-between gap-xs overflow-x-auto rounded-md bg-surface_primary p-md"
+        tabIndex={0}
+        role="region"
+        aria-label={t("weekly.title")}
+      >
         {summary.days.map((day) => (
           <div key={day.date} className="flex flex-col items-center gap-xs">
             <KatoriProgressRing

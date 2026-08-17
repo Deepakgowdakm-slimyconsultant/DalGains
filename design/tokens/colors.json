@@ -44,6 +44,10 @@
     "kadhai_black": {
       "hex": "#14100D",
       "source": "Deepest shadow tone, darker than coal_black -- for drop shadows and pressed states"
+    },
+    "chilli_red_soft": {
+      "hex": "#DDABA0",
+      "source": "Not from a reference image -- a synthesized 60% tint of chilli_red toward signboard_white, added in Part F specifically because chilli_red itself fails WCAG AA (2.29:1) as text color against the dark-mode background (design/contrast-report.md). Only used as accent_warning_text's dark-mode value, never as a general-purpose swatch."
     }
   },
   "semantic": {
@@ -82,6 +86,14 @@
     "surface_card": {
       "token": "signboard_white",
       "purpose": "Raised light surface for list items and form inputs (ThaliCard, text inputs, the bottom nav bar) -- distinct from surface_primary (the page background behind it) and from surface_signboard (a colored painted-sign panel). Added Part E: this needed its own token once it also had to swap in dark mode."
+    },
+    "accent_action_text": {
+      "token": "tamarind_brown",
+      "purpose": "Part F contrast fix: accent_action's actual hex (saffron_orange) is only ~2.4:1 against light surfaces as small text/link color -- nowhere near the 4.5:1 WCAG AA floor (design/contrast-report.md). Use this instead whenever the action color is the text itself (links, the qty +/- buttons, the active bottom-nav label) and reserve raw accent_action for backgrounds/icons/borders, where its own contrast against light surfaces is fine."
+    },
+    "accent_warning_text": {
+      "token": "chilli_red",
+      "purpose": "Part F contrast fix: chilli_red itself is fine as warning TEXT in light mode (4.70:1) -- unchanged here. Kept as a separate token from accent_warning (rather than reusing it directly) only because the dark-mode value has to diverge; see semantic_dark."
     }
   },
   "semantic_dark": {
@@ -109,6 +121,14 @@
     "surface_card": {
       "token": "dusk_purple",
       "purpose": "Raised surface in dark mode -- lighter than surface_primary's deep_indigo (a card should read as sitting above the background), still in the same twilight-purple family rather than introducing a new hue."
+    },
+    "accent_action_text": {
+      "token": "turmeric_yellow",
+      "purpose": "Part F contrast fix, dark-mode side: tamarind_brown (the light-mode fix) is too dark against deep_indigo/dusk_purple to read at all. turmeric_yellow keeps the same 'this is the warm accent, and it's tappable' read while actually passing 4.5:1 against both dark surfaces."
+    },
+    "accent_warning_text": {
+      "token": "chilli_red_soft",
+      "purpose": "Part F contrast fix: chilli_red itself is only 2.29:1 against deep_indigo -- chilli_red_soft (a lightened tint, see its palette entry) passes comfortably against both surface_primary and surface_card in dark mode."
     }
   }
 }
