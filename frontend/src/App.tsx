@@ -9,6 +9,7 @@ import { Profile } from "./screens/Profile";
 import { HistoryLayout } from "./screens/history/HistoryLayout";
 import { Timeline } from "./screens/history/Timeline";
 import { Trends } from "./screens/history/Trends";
+import { Patterns } from "./screens/history/Patterns";
 import { ComingSoonTab } from "./screens/history/ComingSoonTab";
 import { getCurrentUserId } from "./lib/currentUser";
 
@@ -37,8 +38,8 @@ function App() {
               <Route index element={<Navigate to="/history/timeline" replace />} />
               <Route path="timeline" element={<Timeline />} />
               <Route path="trends" element={<Trends />} />
-              {/* Patterns/Export land in the next two Part D commits. */}
-              <Route path="patterns" element={<ComingSoonTab label="Patterns" />} />
+              <Route path="patterns" element={<Patterns />} />
+              {/* Export lands in the next Part D commit. */}
               <Route path="export" element={<ComingSoonTab label="Export" />} />
             </Route>
             <Route path="/profile" element={<Profile />} />

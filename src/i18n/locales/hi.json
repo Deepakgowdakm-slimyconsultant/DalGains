@@ -140,5 +140,16 @@
   "history.chart_macros": "प्रोटीन, वसा, कार्ब्स और फाइबर",
   "history.chart_adherence": "अनुरूपता",
   "history.chart_weight": "वजन",
-  "history.target_band": "लक्ष्य सीमा"
+  "history.target_band": "लक्ष्य सीमा",
+  "history.most_logged": "आपके सबसे ज़्यादा दर्ज किए गए भोजन",
+  "history.times_logged": "{{count}} बार",
+  "history.protein_sources": "आपके प्रोटीन स्रोत",
+  "history.beverage_day": "आपका पेय पदार्थ दिन",
+  "history.beverage_day_note": "दिनों में औसतन एक पेय-प्रधान प्रविष्टि रही",
+  "history.fasting_adherence": "उपवास खिड़की अनुरूपता",
+  "history.fasting_adherence_note": "प्रविष्टियां आपकी खाने की समय-सीमा के भीतर रहीं",
+  "history.week_callouts": "खास सप्ताह",
+  "history.best_week": "सबसे अच्छा सप्ताह",
+  "history.toughest_week": "सबसे कठिन सप्ताह",
+  "history.week_of": "{{date}} का सप्ताह"
 }

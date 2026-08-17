@@ -140,5 +140,16 @@
   "history.chart_macros": "Protein, fat, carbs and fiber",
   "history.chart_adherence": "Adherence",
   "history.chart_weight": "Weight",
-  "history.target_band": "Target range"
+  "history.target_band": "Target range",
+  "history.most_logged": "Your most-logged meals",
+  "history.times_logged": "{{count}}x",
+  "history.protein_sources": "Your protein sources",
+  "history.beverage_day": "Your beverage day",
+  "history.beverage_day_note": "of days had a beverage-heavy entry, on average",
+  "history.fasting_adherence": "Fasting window adherence",
+  "history.fasting_adherence_note": "of entries fell inside your eating window",
+  "history.week_callouts": "Notable weeks",
+  "history.best_week": "Best week",
+  "history.toughest_week": "Toughest week",
+  "history.week_of": "Week of {{date}}"
 }

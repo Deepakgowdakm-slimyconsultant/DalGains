@@ -140,5 +140,16 @@
   "history.chart_macros": "ಪ್ರೋಟೀನ್, ಕೊಬ್ಬು, ಕಾರ್ಬ್ಸ್ ಮತ್ತು ಫೈಬರ್",
   "history.chart_adherence": "ಅನುಸರಣೆ",
   "history.chart_weight": "ತೂಕ",
-  "history.target_band": "ಗುರಿ ವ್ಯಾಪ್ತಿ"
+  "history.target_band": "ಗುರಿ ವ್ಯಾಪ್ತಿ",
+  "history.most_logged": "ನಿಮ್ಮ ಹೆಚ್ಚು ದಾಖಲಾದ ಊಟಗಳು",
+  "history.times_logged": "{{count}} ಬಾರಿ",
+  "history.protein_sources": "ನಿಮ್ಮ ಪ್ರೋಟೀನ್ ಮೂಲಗಳು",
+  "history.beverage_day": "ನಿಮ್ಮ ಪಾನೀಯ ದಿನ",
+  "history.beverage_day_note": "ದಿನಗಳಲ್ಲಿ ಸರಾಸರಿಯಾಗಿ ಪಾನೀಯ-ಪ್ರಧಾನ ನಮೂದು ಇತ್ತು",
+  "history.fasting_adherence": "ಉಪವಾಸ ಸಮಯ ಅನುಸರಣೆ",
+  "history.fasting_adherence_note": "ನಮೂದುಗಳು ನಿಮ್ಮ ಊಟದ ಸಮಯ ಮಿತಿಯೊಳಗೆ ಇದ್ದವು",
+  "history.week_callouts": "ಗಮನಾರ್ಹ ವಾರಗಳು",
+  "history.best_week": "ಅತ್ಯುತ್ತಮ ವಾರ",
+  "history.toughest_week": "ಅತ್ಯಂತ ಕಷ್ಟದ ವಾರ",
+  "history.week_of": "{{date}} ರ ವಾರ"
 }
