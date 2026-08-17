@@ -13,6 +13,16 @@ import { onboardUser, runAxe } from "./helpers";
 // both faster and closer to how a real user actually hits these routes.
 const ROUTES = ["/", "/weekly", "/insights", "/history/timeline", "/history/trends", "/history/patterns", "/history/export", "/profile"];
 
+// Playwright Test's own instrumentation (trace recording, screenshot
+// capture) piles CDP overhead on top of axe-core's already-heavy DOM/
+// style walk -- confirmed by reproducing this same route walk directly
+// against playwright-core (no Test runner, no tracing) at a steady ~10s
+// per route, versus multi-minute stalls under the default trace config.
+// This spec doesn't need traces to be actionable: a failure already
+// carries the violating route (test.step name) and the JSON violation
+// list in the assertion message.
+test.use({ trace: "off", screenshot: "off" });
+
 test.describe("axe-core: 0 violations on every route, light and dark", () => {
   for (const theme of ["light", "dark"] as const) {
     test(`onboarding screen (${theme})`, async ({ page }) => {
