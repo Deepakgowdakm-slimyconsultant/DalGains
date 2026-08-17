@@ -238,8 +238,10 @@ class LogEntry(BaseModel):
     # "serving" and qty is a servings count, which isn't a unit
     # resolve_to_grams has any business converting.
     unit: str = Field(min_length=1)
-    # Set by src.logging.engine.log_entry() at log time, not by the
-    # caller -- None here just means "not logged yet".
+    # Optional "when" for this entry -- e.g. backfilling lunch after the
+    # fact, or a one-tap meal-slot time from the frontend's log flow.
+    # None means "now": src.logging.engine.log_entry() defaults to the
+    # current time when the caller doesn't set one.
     timestamp: Optional[datetime] = None
     outside_eating_window: bool = False
 

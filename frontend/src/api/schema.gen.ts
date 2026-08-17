@@ -38,6 +38,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ingredients/{ingredient_id}/nutrition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Ingredient Nutrition
+         * @description Preview-only: the same qty+unit -> grams resolution the logging
+         *     engine uses (src.core.units.resolve_to_grams, honoring the user's
+         *     calibrated units), without writing anything. Lets the frontend show
+         *     real nutrition before a log entry is confirmed (CLAUDE.md: AI/derived
+         *     estimates must be shown before being logged, never silently accepted).
+         */
+        get: operations["get_ingredient_nutrition_ingredients__ingredient_id__nutrition_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recipes": {
         parameters: {
             query?: never;
@@ -1048,6 +1072,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Ingredient"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_ingredient_nutrition_ingredients__ingredient_id__nutrition_get: {
+        parameters: {
+            query: {
+                qty: number;
+                unit: string;
+                user_id?: string | null;
+            };
+            header?: never;
+            path: {
+                ingredient_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionTotals"];
                 };
             };
             /** @description Validation Error */

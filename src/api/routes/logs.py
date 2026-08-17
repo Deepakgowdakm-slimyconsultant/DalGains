@@ -11,8 +11,11 @@ router = APIRouter(prefix="/logs", tags=["logs"])
 
 @router.post("/{user_id}/entries", response_model=MealLog, status_code=201)
 def post_entry(user_id: str, entry: LogEntry) -> MealLog:
+    # entry.timestamp is the client's chosen "when" (e.g. logging lunch
+    # after the fact, or against a one-tap meal-slot time) -- honor it
+    # when given, same as engine.log_entry's own default of "now".
     try:
-        return engine.log_entry(user_id, entry)
+        return engine.log_entry(user_id, entry, when=entry.timestamp)
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
 

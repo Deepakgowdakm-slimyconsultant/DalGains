@@ -100,6 +100,43 @@ def test_get_ingredient_missing_returns_404(client):
     assert r.status_code == 404
 
 
+def test_get_ingredient_nutrition_resolves_grams(client):
+    # B021 (toor dal) has energy_kcal_per_100g -- 100g should return
+    # exactly that value.
+    ingredient = client.get("/ingredients/B021").json()
+    r = client.get("/ingredients/B021/nutrition", params={"qty": 100, "unit": "g"})
+    assert r.status_code == 200
+    assert r.json()["energy_kcal"] == pytest.approx(ingredient["energy_kcal_per_100g"])
+
+
+def test_get_ingredient_nutrition_katori_matches_default_calibration(client):
+    grams = client.get("/ingredients/B021/nutrition", params={"qty": 150, "unit": "g"}).json()
+    katori = client.get("/ingredients/B021/nutrition", params={"qty": 1, "unit": "katori"}).json()
+    assert katori == grams
+
+
+def test_get_ingredient_nutrition_honors_user_calibration(client):
+    client.post(
+        "/units/alice", json={"unit_name": "katori", "volume_ml": 200, "method": "measured"}
+    )
+    default = client.get("/ingredients/B021/nutrition", params={"qty": 1, "unit": "katori"}).json()
+    alice = client.get(
+        "/ingredients/B021/nutrition", params={"qty": 1, "unit": "katori", "user_id": "alice"}
+    ).json()
+    assert alice["energy_kcal"] > default["energy_kcal"]
+
+
+def test_get_ingredient_nutrition_missing_ingredient_returns_404(client):
+    r = client.get("/ingredients/NOPE999/nutrition", params={"qty": 100, "unit": "g"})
+    assert r.status_code == 404
+
+
+def test_get_ingredient_nutrition_unresolvable_unit_returns_422(client):
+    # B021 (toor dal) has no per_piece_g set.
+    r = client.get("/ingredients/B021/nutrition", params={"qty": 1, "unit": "piece"})
+    assert r.status_code == 422
+
+
 # --- /recipes -------------------------------------------------------------
 
 
@@ -402,6 +439,30 @@ def test_post_log_entry(client):
     r = client.post("/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"})
     assert r.status_code == 201
     assert r.json()["computed_totals"]["energy_kcal"] > 0
+
+
+def test_post_log_entry_honors_client_supplied_timestamp(client):
+    # The frontend's log flow lets a user backfill an entry against a
+    # chosen time (e.g. a one-tap meal slot) rather than always "now" --
+    # the route must forward entry.timestamp through to the log, not
+    # silently overwrite it with the current time.
+    r = client.post(
+        "/logs/apitest/entries",
+        json={
+            "ingredient_id": "B021",
+            "qty": 100,
+            "unit": "g",
+            "timestamp": "2026-01-01T13:00:00Z",
+        },
+    )
+    assert r.status_code == 201
+    assert r.json()["entries"][0]["timestamp"] == "2026-01-01T13:00:00Z"
+
+
+def test_post_log_entry_defaults_timestamp_to_now(client):
+    r = client.post("/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"})
+    assert r.status_code == 201
+    assert r.json()["entries"][0]["timestamp"] is not None
 
 
 def test_post_log_entry_both_ids_returns_422(client):

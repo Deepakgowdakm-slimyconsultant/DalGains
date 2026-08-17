@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./layout/AppShell";
 import { Onboarding } from "./screens/Onboarding";
+import { Home } from "./screens/Home";
 import { getCurrentUserId } from "./lib/currentUser";
 
 // Temporary placeholder for routes not yet built in Part C -- replaced
@@ -28,7 +29,7 @@ function App() {
               </RequireProfile>
             }
           >
-            <Route path="/" element={<ComingSoon label="Home" />} />
+            <Route path="/" element={<Home />} />
             <Route path="/weekly" element={<ComingSoon label="Weekly" />} />
             <Route path="/insights" element={<ComingSoon label="Insights" />} />
             <Route path="/history/*" element={<ComingSoon label="History" />} />
