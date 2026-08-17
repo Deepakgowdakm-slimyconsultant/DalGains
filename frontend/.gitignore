@@ -16,6 +16,12 @@ dist-ssr
 # not hand-maintained, not a source of truth.
 public/locales/
 
+# Test artifacts
+coverage/
+test-results/
+playwright-report/
+blob-report/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

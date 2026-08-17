@@ -1,3 +1,5 @@
+import { ringGeometry } from "../lib/ringMath";
+
 interface KatoriProgressRingProps {
   label: string;
   current: number;
@@ -31,10 +33,7 @@ export function KatoriProgressRing({
   const dimension = size === "primary" ? 160 : 72;
   const stroke = size === "primary" ? 14 : 8;
   const radius = dimension / 2 - stroke;
-  const circumference = 2 * Math.PI * radius;
-  const fraction = target > 0 ? Math.min(current / target, 1) : 0;
-  const dashOffset = circumference * (1 - fraction);
-  const overTarget = target > 0 && current > target;
+  const { circumference, dashOffset, overTarget } = ringGeometry(current, target, radius);
 
   return (
     <div
@@ -42,7 +41,7 @@ export function KatoriProgressRing({
       role="img"
       aria-label={`${label}: ${Math.round(current)} of ${Math.round(target)}${unit ?? ""}`}
     >
-      <svg width={dimension} height={dimension} viewBox={`0 0 ${dimension} ${dimension}`}>
+      <svg width={dimension} height={dimension} viewBox={`0 0 ${dimension} ${dimension}`} aria-hidden="true">
         <circle
           cx={dimension / 2}
           cy={dimension / 2}

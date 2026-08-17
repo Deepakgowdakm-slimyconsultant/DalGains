@@ -8,4 +8,12 @@ import type { paths } from "./schema.gen";
 //   npm run generate-api                       (from frontend/)
 export const api = createClient<paths>({
   baseUrl: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000",
+  // openapi-fetch defaults to `fetch: globalThis.fetch`, captured once
+  // when createClient() runs (module-import time, here). MSW's
+  // server.listen() (component tests) patches globalThis.fetch later,
+  // in a beforeAll -- an eagerly-captured reference would miss that
+  // patch entirely and hit the real network. Resolving `fetch` inside
+  // the wrapper instead of as a default-parameter value looks it up
+  // fresh on every call, after MSW is listening.
+  fetch: (...args: Parameters<typeof fetch>) => fetch(...args),
 });
