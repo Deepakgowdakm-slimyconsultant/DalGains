@@ -179,7 +179,7 @@ export function LogEntryFlow({ open, userId, onClose, onLogged }: LogEntryFlowPr
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("logging.search_placeholder")}
-            className="min-h-tap-primary w-full rounded-md border-2 border-tamarind_brown/30 bg-signboard_white px-md text-body text-ink_body"
+            className="min-h-tap-primary w-full rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-md text-body text-ink_body"
           />
           <div className="flex flex-col gap-xs">
             {recipes.map((r) => (

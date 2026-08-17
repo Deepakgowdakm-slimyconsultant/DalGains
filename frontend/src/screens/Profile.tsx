@@ -114,7 +114,7 @@ export function Profile() {
               type="text"
               value={profile.name}
               onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-              className="min-h-tap-min rounded-md border-2 border-tamarind_brown/30 bg-signboard_white px-sm text-body text-ink_body"
+              className="min-h-tap-min rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-sm text-body text-ink_body"
             />
           </label>
           <label className="flex flex-col gap-xs text-caption text-ink_body/70">
@@ -123,7 +123,7 @@ export function Profile() {
               type="number"
               value={profile.weight_kg}
               onChange={(e) => setProfile({ ...profile, weight_kg: Number(e.target.value) })}
-              className="min-h-tap-min rounded-md border-2 border-tamarind_brown/30 bg-signboard_white px-sm text-body text-ink_body"
+              className="min-h-tap-min rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-sm text-body text-ink_body"
             />
           </label>
           <DhabaButton onClick={saveProfile}>{savedMessage ? t("common.done") : t("common.save")}</DhabaButton>
@@ -146,7 +146,7 @@ export function Profile() {
                       value={calibrationInput}
                       onChange={(e) => setCalibrationInput(e.target.value)}
                       placeholder="ml"
-                      className="min-h-tap-min w-20 rounded-md border-2 border-tamarind_brown/30 bg-signboard_white px-sm text-body text-ink_body"
+                      className="min-h-tap-min w-20 rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-sm text-body text-ink_body"
                     />
                     <DhabaButton onClick={() => saveCalibration(unitName)}>{t("common.save")}</DhabaButton>
                   </div>

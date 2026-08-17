@@ -21,7 +21,7 @@ export function FloatingLogSheet({ open, title, onClose, children }: FloatingLog
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="flex max-h-[85vh] w-full max-w-app flex-col rounded-t-lg bg-surface_primary px-md pb-lg pt-sm dark:bg-dark-surface_primary"
+        className="flex max-h-[85vh] w-full max-w-app flex-col rounded-t-lg bg-surface_primary px-md pb-lg pt-sm"
       >
         <div className="mx-auto mb-sm h-1.5 w-12 rounded-full bg-tamarind_brown/30" aria-hidden="true" />
         <div className="flex items-center justify-between pb-sm">

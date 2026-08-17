@@ -22,13 +22,13 @@ const NAV_ITEMS: NavItem[] = [
 export function AppShell() {
   const { t } = useTranslation();
   return (
-    <div className="flex min-h-dvh flex-col bg-surface_primary dark:bg-dark-surface_primary">
+    <div className="flex min-h-dvh flex-col bg-surface_primary">
       <div className="flex-1 overflow-y-auto pb-24">
         <Outlet />
       </div>
       <nav
         aria-label={t("nav.label")}
-        className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-app justify-around border-t border-tamarind_brown/15 bg-signboard_white pb-[env(safe-area-inset-bottom)] print:hidden dark:bg-dark-surface_primary"
+        className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-app justify-around border-t border-tamarind_brown/15 bg-surface_card pb-[env(safe-area-inset-bottom)] print:hidden"
       >
         {NAV_ITEMS.map((item) => (
           <NavLink

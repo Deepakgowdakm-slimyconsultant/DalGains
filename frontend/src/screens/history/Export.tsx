@@ -109,14 +109,14 @@ export function Export() {
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="min-h-tap-min flex-1 rounded-md border-2 border-tamarind_brown/30 bg-signboard_white px-sm text-body text-ink_body"
+            className="min-h-tap-min flex-1 rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-sm text-body text-ink_body"
           />
           <span className="text-body text-ink_body">{t("history.export_to")}</span>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="min-h-tap-min flex-1 rounded-md border-2 border-tamarind_brown/30 bg-signboard_white px-sm text-body text-ink_body"
+            className="min-h-tap-min flex-1 rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-sm text-body text-ink_body"
           />
         </div>
         <p className="mt-xs text-caption text-ink_body/70">{t("history.export_day_count", { count: inRange.length })}</p>

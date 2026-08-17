@@ -18,7 +18,7 @@ export function ThaliCard({ title, subtitle, meta, icon, onClick, trailing }: Th
     <Tag
       onClick={onClick}
       type={onClick ? "button" : undefined}
-      className="flex w-full min-h-tap-min items-center gap-md rounded-md border border-tamarind_brown/15 bg-signboard_white px-md py-sm text-left dark:bg-dark-surface_primary"
+      className="flex w-full min-h-tap-min items-center gap-md rounded-md border border-tamarind_brown/15 bg-surface_card px-md py-sm text-left"
     >
       {icon && (
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-dhaba_cream text-headline">

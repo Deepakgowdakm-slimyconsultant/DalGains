@@ -78,6 +78,37 @@
     "accent_success": {
       "token": "mint_green",
       "purpose": "Not in the Phase 3 brief's required list -- added because adherence/streak UI needs an \"on track\" color distinct from celebration/warning."
+    },
+    "surface_card": {
+      "token": "signboard_white",
+      "purpose": "Raised light surface for list items and form inputs (ThaliCard, text inputs, the bottom nav bar) -- distinct from surface_primary (the page background behind it) and from surface_signboard (a colored painted-sign panel). Added Part E: this needed its own token once it also had to swap in dark mode."
+    }
+  },
+  "semantic_dark": {
+    "$note": "Phase 4 Part E. Dark mode is 'the same night market, seen at dusk' -- warm signboard colors stay warm, only the ambient background and body ink shift. accent_* tokens are deliberately reused unchanged from the light palette (they're already saturated enough to read on a dark ground); design/contrast-report.md (Part F) is the formal WCAG AA check and the place any pair gets retuned if it fails, rather than guessing adjustments here.",
+    "surface_primary": {
+      "token": "deep_indigo",
+      "purpose": "Default app background in dark mode -- deep indigo (the हॉर्न ओके प्लीज़ night-highway sky), not a flat #111/#222 tech-dark."
+    },
+    "surface_signboard": {
+      "token": "tamarind_brown",
+      "purpose": "Unchanged from light mode -- a painted wooden signboard doesn't change color at night, only what's around it does."
+    },
+    "ink_body": {
+      "token": "dhaba_cream",
+      "purpose": "Default body text in dark mode -- warm cream, not pure white, echoing the bus-body/signboard cream from the light palette's ink_hero family."
+    },
+    "ink_hero": {
+      "token": "signboard_white",
+      "purpose": "Unchanged -- still set over already-colored signboard surfaces, not directly on the dark background."
+    },
+    "accent_action": { "token": "saffron_orange", "purpose": "Unchanged -- stays warm." },
+    "accent_warning": { "token": "chilli_red", "purpose": "Unchanged -- stays warm." },
+    "accent_celebration": { "token": "turmeric_yellow", "purpose": "Unchanged -- stays warm." },
+    "accent_success": { "token": "mint_green", "purpose": "Unchanged -- stays warm." },
+    "surface_card": {
+      "token": "dusk_purple",
+      "purpose": "Raised surface in dark mode -- lighter than surface_primary's deep_indigo (a card should read as sitting above the background), still in the same twilight-purple family rather than introducing a new hue."
     }
   }
 }

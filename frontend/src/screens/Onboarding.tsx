@@ -118,7 +118,7 @@ function NumberField({ value, onChange, placeholder }: { value: number | undefin
       value={value ?? ""}
       placeholder={placeholder}
       onChange={(e) => onChange(Number(e.target.value))}
-      className="min-h-tap-primary w-full rounded-md border-2 border-tamarind_brown/30 bg-signboard_white px-md text-headline text-ink_body"
+      className="min-h-tap-primary w-full rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-md text-headline text-ink_body"
     />
   );
 }
@@ -183,7 +183,7 @@ export function Onboarding() {
             value={draft.name ?? ""}
             placeholder={t("onboarding.name_placeholder")}
             onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
-            className="min-h-tap-primary w-full rounded-md border-2 border-tamarind_brown/30 bg-signboard_white px-md text-headline text-ink_body"
+            className="min-h-tap-primary w-full rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-md text-headline text-ink_body"
           />
         </Step>
       );

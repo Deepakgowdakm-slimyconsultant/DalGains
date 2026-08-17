@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 // Tailwind reads the design tokens directly from design/tokens/*.json --
 // no hand-tuned Tailwind defaults, no one-off hex codes anywhere else in
@@ -19,20 +20,40 @@ const paletteColors: Record<string, string> = Object.fromEntries(
   Object.entries(colors.palette as Record<string, { hex: string }>).map(([name, { hex }]) => [name, hex])
 );
 
+function hexToRgbTriplet(hex: string): string {
+  const value = hex.replace("#", "");
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  return `${r} ${g} ${b}`;
+}
+
+// Semantic tokens (surface_primary, ink_body, accent_action, ...) are the
+// ones that change between light and dark mode -- so, unlike the raw
+// palette colors above (which stay static hex; a raw palette swatch is
+// never itself mode-dependent), they're wired as CSS custom properties.
+// One utility class (e.g. `bg-surface_primary`) then works correctly in
+// both modes with zero `dark:` prefixing needed anywhere else in the
+// frontend -- the actual light/dark values are declared once, below, and
+// swapped by the `.dark` class on <html> (src/lib/theme.ts).
+const semanticNames = Object.keys(colors.semantic as Record<string, unknown>);
 const semanticColors: Record<string, string> = Object.fromEntries(
-  Object.entries(colors.semantic as Record<string, { token: string }>).map(([name, { token }]) => [
-    name,
-    paletteColors[token],
-  ])
+  semanticNames.map((name) => [name, `rgb(var(--color-${name.replace(/_/g, "-")}) / <alpha-value>)`])
 );
 
-// Dark-mode semantic overrides live under colors.json's "semantic_dark" key
-// (added in Part E). Until then this is an empty object and dark: variants
-// simply fall back to the light semantic value.
-const semanticDark: Record<string, { token: string }> = colors.semantic_dark ?? {};
-const semanticColorsDark: Record<string, string> = Object.fromEntries(
-  Object.entries(semanticDark).map(([name, { token }]) => [name, paletteColors[token] ?? token])
-);
+function cssVarBlock(source: Record<string, { token: string }>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(source)
+      // colors.json's "$note" keys are documentation, not tokens.
+      .filter(([name]) => !name.startsWith("$"))
+      .map(([name, { token }]) => [`--color-${name.replace(/_/g, "-")}`, hexToRgbTriplet(paletteColors[token] ?? token)])
+  );
+}
+
+const lightVars = cssVarBlock(colors.semantic);
+// Falls back to the light value for any semantic token semantic_dark
+// doesn't override, rather than being left undefined.
+const darkVars = { ...lightVars, ...cssVarBlock(colors.semantic_dark ?? {}) };
 
 const spacingScale: Record<string, string> = Object.fromEntries(
   Object.entries(spacing.scale_px as Record<string, number>).map(([name, px]) => [name, `${px}px`])
@@ -46,7 +67,6 @@ export default {
       colors: {
         ...paletteColors,
         ...semanticColors,
-        dark: semanticColorsDark,
       },
       spacing: spacingScale,
       maxWidth: {
@@ -84,5 +104,12 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addBase }) => {
+      addBase({
+        ":root": lightVars,
+        ":root.dark": darkVars,
+      });
+    }),
+  ],
 } satisfies Config;

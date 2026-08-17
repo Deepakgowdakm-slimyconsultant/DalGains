@@ -151,7 +151,7 @@ export function Home() {
                 value={weightInput}
                 onChange={(e) => setWeightInput(e.target.value)}
                 placeholder="kg"
-                className="min-h-tap-min w-16 rounded-md border-2 border-tamarind_brown/30 bg-signboard_white px-sm text-body text-ink_body"
+                className="min-h-tap-min w-16 rounded-md border-2 border-tamarind_brown/30 bg-surface_card px-sm text-body text-ink_body"
               />
               <DhabaButton onClick={saveWeight} disabled={loggingWeight}>
                 {t("common.save")}
