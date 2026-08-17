@@ -4,6 +4,7 @@ import { AppShell } from "./layout/AppShell";
 import { Onboarding } from "./screens/Onboarding";
 import { Home } from "./screens/Home";
 import { Weekly } from "./screens/Weekly";
+import { Insights } from "./screens/Insights";
 import { getCurrentUserId } from "./lib/currentUser";
 
 // Temporary placeholder for routes not yet built in Part C -- replaced
@@ -32,7 +33,7 @@ function App() {
           >
             <Route path="/" element={<Home />} />
             <Route path="/weekly" element={<Weekly />} />
-            <Route path="/insights" element={<ComingSoon label="Insights" />} />
+            <Route path="/insights" element={<Insights />} />
             <Route path="/history/*" element={<ComingSoon label="History" />} />
             <Route path="/profile" element={<ComingSoon label="Profile" />} />
           </Route>

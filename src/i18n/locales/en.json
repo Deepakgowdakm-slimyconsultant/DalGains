@@ -98,5 +98,9 @@
   "weekly.adherence": "On-target days",
   "weekly.streak": "Day streak",
   "weekly.averages": "Weekly averages",
-  "weekly.notable_days": "Notable days"
+  "weekly.notable_days": "Notable days",
+  "insight.show_why": "Show why",
+  "insight.restore": "Bring back",
+  "insight.none": "No insights right now -- keep logging and they'll show up here",
+  "insight.dismissed_today": "Dismissed today"
 }

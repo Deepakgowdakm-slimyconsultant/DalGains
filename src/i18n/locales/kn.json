@@ -98,5 +98,9 @@
   "weekly.adherence": "ಗುರಿಯಂತೆ ಇದ್ದ ದಿನಗಳು",
   "weekly.streak": "ಸತತ ದಿನಗಳು",
   "weekly.averages": "ಸಾಪ್ತಾಹಿಕ ಸರಾಸರಿ",
-  "weekly.notable_days": "ಗಮನಾರ್ಹ ದಿನಗಳು"
+  "weekly.notable_days": "ಗಮನಾರ್ಹ ದಿನಗಳು",
+  "insight.show_why": "ಏಕೆ ಎಂದು ತೋರಿಸಿ",
+  "insight.restore": "ಮತ್ತೆ ತನ್ನಿ",
+  "insight.none": "ಈಗ ಯಾವುದೇ ಒಳನೋಟಗಳಿಲ್ಲ -- ದಾಖಲಿಸುತ್ತಿರಿ, ಅವು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ",
+  "insight.dismissed_today": "ಇಂದು ತೆಗೆದುಹಾಕಲಾಗಿದೆ"
 }

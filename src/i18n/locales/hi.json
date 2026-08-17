@@ -98,5 +98,9 @@
   "weekly.adherence": "लक्ष्य के अनुरूप दिन",
   "weekly.streak": "दिनों की लगातार गिनती",
   "weekly.averages": "साप्ताहिक औसत",
-  "weekly.notable_days": "खास दिन"
+  "weekly.notable_days": "खास दिन",
+  "insight.show_why": "क्यों, देखें",
+  "insight.restore": "वापस लाएं",
+  "insight.none": "अभी कोई जानकारी नहीं -- दर्ज करते रहें, ये यहां दिखने लगेंगी",
+  "insight.dismissed_today": "आज हटाई गईं"
 }
