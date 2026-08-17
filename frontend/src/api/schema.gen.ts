@@ -305,6 +305,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/profile/{user_id}/weight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Weight
+         * @description Every weight this user has logged, keyed by date. Empty if
+         *     they've never used the optional weight-logging feature.
+         */
+        get: operations["get_weight_profile__user_id__weight_get"];
+        put?: never;
+        /** Post Weight */
+        post: operations["post_weight_profile__user_id__weight_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/units/{user_id}": {
         parameters: {
             query?: never;
@@ -1085,6 +1107,15 @@ export interface components {
             /** Warnings */
             warnings?: string[];
         };
+        /** WeightEntry */
+        WeightEntry: {
+            /** User Id */
+            user_id: string;
+            /** Date */
+            date: string;
+            /** Weight Kg */
+            weight_kg: number;
+        };
     };
     responses: never;
     parameters: never;
@@ -1798,6 +1829,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlanRecommendation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_weight_profile__user_id__weight_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: number;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_weight_profile__user_id__weight_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WeightEntry"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeightEntry"];
                 };
             };
             /** @description Validation Error */

@@ -73,6 +73,8 @@
   "home.no_entries_yet": "ಇಂದು ಇನ್ನೂ ಏನೂ ದಾಖಲಿಸಿಲ್ಲ",
   "home.log_button": "+ ದಾಖಲಿಸಿ",
   "home.remove_entry": "ತೆಗೆದುಹಾಕಿ",
+  "home.log_weight_prompt": "ಇಂದಿನ ತೂಕವನ್ನು ದಾಖಲಿಸುವುದೇ?",
+  "home.weight_logged_today": "ಇಂದಿನ ತೂಕ: {{weight}}kg",
   "logging.search_title": "ನೀವು ಏನು ಸೇವಿಸಿದಿರಿ?",
   "logging.search_placeholder": "ದಾಲ್, ಸಬ್ಜಿ, ರೊಟ್ಟಿ ಹುಡುಕಿ...",
   "logging.when_title": "ನೀವು ಇದನ್ನು ಯಾವಾಗ ಸೇವಿಸಿದಿರಿ?",
@@ -129,5 +131,14 @@
   "history.filter.fasting_days": "ಉಪವಾಸದ ದಿನಗಳು",
   "history.filter.beverages_only": "ಪಾನೀಯಗಳು ಮಾತ್ರ",
   "history.no_matching_days": "ಈ ಫಿಲ್ಟರ್‌ಗೆ ಇನ್ನೂ ಯಾವುದೇ ದಿನಗಳು ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ",
-  "history.load_more": "ಇನ್ನಷ್ಟು ಲೋಡ್ ಮಾಡಿ"
+  "history.load_more": "ಇನ್ನಷ್ಟು ಲೋಡ್ ಮಾಡಿ",
+  "history.fiber": "ಫೈಬರ್",
+  "history.range_30": "30 ದಿನಗಳು",
+  "history.range_90": "90 ದಿನಗಳು",
+  "history.range_all": "ಎಲ್ಲಾ ಸಮಯ",
+  "history.chart_kcal": "ಕ್ಯಾಲೊರಿಗಳು",
+  "history.chart_macros": "ಪ್ರೋಟೀನ್, ಕೊಬ್ಬು, ಕಾರ್ಬ್ಸ್ ಮತ್ತು ಫೈಬರ್",
+  "history.chart_adherence": "ಅನುಸರಣೆ",
+  "history.chart_weight": "ತೂಕ",
+  "history.target_band": "ಗುರಿ ವ್ಯಾಪ್ತಿ"
 }

@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 import src.core.profiles as profiles
 import src.core.units as units
+import src.core.weight_log as weight_log
 import src.logging.store as store
 import src.recipes.builder as builder
 
@@ -17,6 +18,7 @@ def isolated_data_dirs(tmp_path, monkeypatch):
     monkeypatch.setattr(store, "LOGS_DIR", tmp_path / "logs")
     monkeypatch.setattr(profiles, "USERS_DIR", tmp_path / "users")
     monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
+    monkeypatch.setattr(weight_log, "USERS_DIR", tmp_path / "users")
 
     # Copy the real seeded recipes into the isolated dir so read tests
     # (get_recipe, nutrition, ...) see realistic data, while writes
@@ -405,6 +407,24 @@ def test_get_plan(client):
 def test_get_plan_missing_profile_returns_404(client):
     r = client.get("/profile/nobody/plan")
     assert r.status_code == 404
+
+
+def test_get_weight_empty_for_user_who_never_logged(client):
+    r = client.get("/profile/apitest/weight")
+    assert r.status_code == 200
+    assert r.json() == {}
+
+
+def test_post_and_get_weight(client):
+    r = client.post("/profile/apitest/weight", json={"user_id": "apitest", "date": "2026-01-01", "weight_kg": 70.5})
+    assert r.status_code == 201
+    r2 = client.get("/profile/apitest/weight")
+    assert r2.json() == {"2026-01-01": 70.5}
+
+
+def test_post_weight_mismatched_user_id_returns_400(client):
+    r = client.post("/profile/apitest/weight", json={"user_id": "someone-else", "date": "2026-01-01", "weight_kg": 70})
+    assert r.status_code == 400
 
 
 # --- /units ------------------------------------------------------------

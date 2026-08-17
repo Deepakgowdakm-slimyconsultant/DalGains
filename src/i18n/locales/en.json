@@ -73,6 +73,8 @@
   "home.no_entries_yet": "Nothing logged yet today",
   "home.log_button": "+ Log",
   "home.remove_entry": "Remove",
+  "home.log_weight_prompt": "Log today's weight?",
+  "home.weight_logged_today": "Today's weight: {{weight}}kg",
   "logging.search_title": "What did you have?",
   "logging.search_placeholder": "Search dal, sabzi, roti...",
   "logging.when_title": "When did you have this?",
@@ -129,5 +131,14 @@
   "history.filter.fasting_days": "Fasting days",
   "history.filter.beverages_only": "Beverages only",
   "history.no_matching_days": "No days match this filter yet",
-  "history.load_more": "Load more"
+  "history.load_more": "Load more",
+  "history.fiber": "Fiber",
+  "history.range_30": "30 days",
+  "history.range_90": "90 days",
+  "history.range_all": "All time",
+  "history.chart_kcal": "Calories",
+  "history.chart_macros": "Protein, fat, carbs and fiber",
+  "history.chart_adherence": "Adherence",
+  "history.chart_weight": "Weight",
+  "history.target_band": "Target range"
 }

@@ -73,6 +73,8 @@
   "home.no_entries_yet": "आज अभी तक कुछ दर्ज नहीं किया गया",
   "home.log_button": "+ दर्ज करें",
   "home.remove_entry": "हटाएं",
+  "home.log_weight_prompt": "आज का वजन दर्ज करें?",
+  "home.weight_logged_today": "आज का वजन: {{weight}}kg",
   "logging.search_title": "आपने क्या खाया?",
   "logging.search_placeholder": "दाल, सब्ज़ी, रोटी खोजें...",
   "logging.when_title": "आपने यह कब खाया?",
@@ -129,5 +131,14 @@
   "history.filter.fasting_days": "उपवास के दिन",
   "history.filter.beverages_only": "केवल पेय पदार्थ",
   "history.no_matching_days": "इस फ़िल्टर से अभी कोई दिन मेल नहीं खाता",
-  "history.load_more": "और लोड करें"
+  "history.load_more": "और लोड करें",
+  "history.fiber": "फाइबर",
+  "history.range_30": "30 दिन",
+  "history.range_90": "90 दिन",
+  "history.range_all": "अब तक",
+  "history.chart_kcal": "कैलोरी",
+  "history.chart_macros": "प्रोटीन, वसा, कार्ब्स और फाइबर",
+  "history.chart_adherence": "अनुरूपता",
+  "history.chart_weight": "वजन",
+  "history.target_band": "लक्ष्य सीमा"
 }

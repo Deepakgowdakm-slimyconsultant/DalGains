@@ -223,6 +223,15 @@ class HouseholdUnit(BaseModel):
     calibration_method: CalibrationMethod
 
 
+class WeightEntry(BaseModel):
+    # Optional daily weight logging (History's trend chart shows it only
+    # if a user has actually logged any) -- one entry per calendar date,
+    # same "flat JSON under data/users/" convention as HouseholdUnit.
+    user_id: str = Field(min_length=1)
+    date: str = Field(min_length=1)
+    weight_kg: float = Field(gt=0, le=300)
+
+
 # ---------------------------------------------------------------------------
 # MealLog
 # ---------------------------------------------------------------------------

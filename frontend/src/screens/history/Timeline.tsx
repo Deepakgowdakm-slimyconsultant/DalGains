@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { SpiceChip } from "../../components/SpiceChip";
 import { ThaliCard } from "../../components/ThaliCard";
 import { DhabaButton } from "../../components/DhabaButton";
@@ -36,6 +37,9 @@ export function Timeline() {
   const [activeFilter, setActiveFilter] = useState<FilterKey | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const jumpTarget = searchParams.get("date");
+  const dayRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   function matchesFilter(log: MealLog): boolean {
     if (!activeFilter) return true;
@@ -70,6 +74,22 @@ export function Timeline() {
   const filtered = useMemo(() => logs.filter(matchesFilter), [logs, activeFilter, profile, plan]);
   const visible = filtered.slice(0, visibleCount);
 
+  // Trends' "tap a datapoint" lands here as /history/timeline?date=...
+  // -- clear any filter that might hide it, make sure it's within the
+  // paged-in range, expand it, and scroll it into view.
+  useEffect(() => {
+    if (!jumpTarget || logs.length === 0) return;
+    setActiveFilter(null);
+    const index = [...logs].sort((a, b) => b.log_id.localeCompare(a.log_id)).findIndex((l) => l.log_id === jumpTarget);
+    if (index >= 0) setVisibleCount((c) => Math.max(c, index + 1));
+    setExpanded((prev) => new Set(prev).add(jumpTarget));
+    requestAnimationFrame(() => {
+      dayRefs.current.get(jumpTarget)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    setSearchParams({}, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jumpTarget, logs]);
+
   function toggleExpanded(logId: string) {
     setExpanded((prev) => {
       const next = new Set(prev);
@@ -103,7 +123,14 @@ export function Timeline() {
             {visible.map((log) => {
               const isExpanded = expanded.has(log.log_id);
               return (
-                <div key={log.log_id} className="rounded-md bg-surface_primary p-md">
+                <div
+                  key={log.log_id}
+                  ref={(el) => {
+                    if (el) dayRefs.current.set(log.log_id, el);
+                    else dayRefs.current.delete(log.log_id);
+                  }}
+                  className="rounded-md bg-surface_primary p-md"
+                >
                   <button type="button" onClick={() => toggleExpanded(log.log_id)} className="flex w-full items-center justify-between gap-sm text-left">
                     <span className="flex items-center gap-sm">
                       <span className={`h-3 w-3 shrink-0 rounded-full ${adherenceDotClass(log.computed_totals.energy_kcal, plan?.daily_kcal ?? null)}`} aria-hidden="true" />

@@ -48,6 +48,9 @@ export function Home() {
   const [dismissed, setDismissed] = useState<string[]>(loadDismissed());
   const [sheetOpen, setSheetOpen] = useState(false);
   const [entryNames, setEntryNames] = useState<Record<string, string>>({});
+  const [todaysWeight, setTodaysWeight] = useState<number | null>(null);
+  const [weightInput, setWeightInput] = useState("");
+  const [loggingWeight, setLoggingWeight] = useState(false);
 
   const reload = useCallback(() => {
     api.GET("/profile/{user_id}", { params: { path: { user_id: userId } } }).then(({ data }) => data && setProfile(data));
@@ -57,7 +60,22 @@ export function Home() {
       else setToday(null);
     });
     api.GET("/insights/{user_id}", { params: { path: { user_id: userId } } }).then(({ data }) => data && setInsights(data));
+    api.GET("/profile/{user_id}/weight", { params: { path: { user_id: userId } } }).then(({ data }) => {
+      setTodaysWeight(data?.[todayIso()] ?? null);
+    });
   }, [userId]);
+
+  async function saveWeight() {
+    const kg = Number(weightInput);
+    if (!kg || kg <= 0) return;
+    setLoggingWeight(true);
+    const { data } = await api.POST("/profile/{user_id}/weight", {
+      params: { path: { user_id: userId } },
+      body: { user_id: userId, date: todayIso(), weight_kg: kg },
+    });
+    setLoggingWeight(false);
+    if (data) setTodaysWeight(data.weight_kg);
+  }
 
   useEffect(() => {
     reload();
@@ -119,6 +137,29 @@ export function Home() {
           </div>
         </div>
       )}
+
+      <div className="flex items-center justify-between gap-sm rounded-md bg-surface_primary p-md">
+        {todaysWeight !== null ? (
+          <span className="text-body text-ink_body">{t("home.weight_logged_today", { weight: todaysWeight })}</span>
+        ) : (
+          <>
+            <span className="text-body text-ink_body">{t("home.log_weight_prompt")}</span>
+            <div className="flex items-center gap-xs">
+              <input
+                type="number"
+                inputMode="decimal"
+                value={weightInput}
+                onChange={(e) => setWeightInput(e.target.value)}
+                placeholder="kg"
+                className="min-h-tap-min w-16 rounded-md border-2 border-tamarind_brown/30 bg-signboard_white px-sm text-body text-ink_body"
+              />
+              <DhabaButton onClick={saveWeight} disabled={loggingWeight}>
+                {t("common.save")}
+              </DhabaButton>
+            </div>
+          </>
+        )}
+      </div>
 
       {activeInsight && (
         <div className="flex items-start justify-between gap-sm rounded-md bg-surface_signboard p-md">
