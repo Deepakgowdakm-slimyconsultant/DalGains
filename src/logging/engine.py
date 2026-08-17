@@ -5,7 +5,7 @@ from typing import Optional, Union
 
 from src.core.ingredients import load_ingredients
 from src.core.schemas import Beverage, LogEntry, MealLog, NutritionTotals, QuarantinedLog, WeeklySummary
-from src.logging import aggregation, store
+from src.logging import aggregation, category_breakdown as category_breakdown_module, store
 from src.logging.fasting_integration import is_within_eating_window
 from src.recipes.builder import create_recipe
 
@@ -131,6 +131,14 @@ def tag_day(user_id: str, date: str, tag: str) -> MealLog:
 
 def get_week(user_id: str, week_ending_date: str) -> WeeklySummary:
     return aggregation.weekly_totals(user_id, week_ending_date)
+
+
+def category_breakdown(user_id: str, start: str, end: str) -> dict:
+    """category -> nutrition totals across [start, end], plus a per-day
+    beverage-kcal split -- true gram-level attribution (see
+    src.logging.category_breakdown's module docstring), not a name-
+    matching approximation."""
+    return category_breakdown_module.category_breakdown(user_id, start, end)
 
 
 def get_range(user_id: str, start: str, end: str) -> list[Union[MealLog, QuarantinedLog]]:

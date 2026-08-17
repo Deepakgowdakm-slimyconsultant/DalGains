@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SpiceChip } from "../../components/SpiceChip";
 import { getCurrentUserId } from "../../lib/currentUser";
+import { api } from "../../api/client";
 import { useHistoryData } from "./useHistoryData";
 import { EmptyHistoryState } from "./EmptyHistoryState";
 import { PieChart } from "./PieChart";
@@ -9,16 +10,35 @@ import type { ChartToken } from "./charts";
 import type { components } from "../../api/schema.gen";
 
 type MealLog = components["schemas"]["MealLog"];
+type CategoryBreakdown = components["schemas"]["CategoryBreakdown"];
 
 type RangeKey = "30" | "90" | "all";
 const RANGES: RangeKey[] = ["30", "90", "all"];
 
-const PROTEIN_SOURCE_KEYWORDS: { label: string; token: ChartToken; test: RegExp }[] = [
-  { label: "Dal", token: "accent_action", test: /\bdal\b/i },
-  { label: "Curd / paneer / dairy", token: "accent_success", test: /curd|paneer|yog(h)?urt|milk|dairy|lassi|buttermilk/i },
-  { label: "Eggs", token: "accent_celebration", test: /\begg/i },
-  { label: "Meat / fish", token: "accent_warning", test: /chicken|mutton|fish|meat|prawn|egg curry/i },
-];
+// Display label per Ingredient.category (src/core/schemas.py's
+// IngredientCategory) for the protein-sources pie. Categories not
+// listed here fall back to a title-cased version of the raw key, and
+// only the top 4 by actual protein grams get their own slice -- the
+// rest are pooled into "Other" so the chart stays readable.
+const CATEGORY_LABELS: Record<string, string> = {
+  dal: "Dal",
+  dairy: "Dairy",
+  egg: "Eggs",
+  meat: "Meat",
+  fish: "Fish",
+  nut_seed: "Nuts & seeds",
+  grain: "Grains",
+  vegetable: "Vegetables",
+  fruit: "Fruit",
+  oil_fat: "Oil / ghee",
+  beverage_base: "Beverages",
+  sweetener: "Sweeteners",
+  spice: "Spices",
+  prepared: "Prepared foods",
+  other: "Other",
+};
+
+const PIE_TOKENS: ChartToken[] = ["accent_action", "accent_success", "accent_celebration", "accent_warning", "tamarind_brown"];
 
 function isoWeek(dateStr: string): string {
   const d = new Date(dateStr);
@@ -36,6 +56,7 @@ export function Patterns() {
   const userId = getCurrentUserId()!;
   const { profile, plan, logs, loading, entryLabel } = useHistoryData(userId);
   const [range, setRange] = useState<RangeKey>("30");
+  const [breakdown, setBreakdown] = useState<CategoryBreakdown | null>(null);
 
   const windowed = useMemo(() => {
     const ascending = [...logs].sort((a, b) => a.log_id.localeCompare(b.log_id));
@@ -43,6 +64,21 @@ export function Patterns() {
     const n = range === "30" ? 30 : 90;
     return ascending.slice(-n);
   }, [logs, range]);
+
+  const startDate = windowed[0]?.log_id;
+  const endDate = windowed[windowed.length - 1]?.log_id;
+
+  useEffect(() => {
+    if (!startDate || !endDate) {
+      setBreakdown(null);
+      return;
+    }
+    api
+      .GET("/logs/{user_id}/category_breakdown/{start}/{end}", {
+        params: { path: { user_id: userId, start: startDate, end: endDate } },
+      })
+      .then(({ data }) => data && setBreakdown(data));
+  }, [userId, startDate, endDate]);
 
   const mostLogged = useMemo(() => {
     const counts = new Map<string, number>();
@@ -55,31 +91,41 @@ export function Patterns() {
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
   }, [windowed, entryLabel]);
 
+  // True gram-level attribution from GET .../category_breakdown, not a
+  // name-match on the entry's display label -- a recipe's protein is
+  // split ingredient-by-ingredient server-side (src.logging.
+  // category_breakdown), the same way compute_nutrition itself scales
+  // each RecipeIngredient.
   const proteinSources = useMemo(() => {
-    const totals = PROTEIN_SOURCE_KEYWORDS.map((k) => ({ ...k, value: 0 }));
-    for (const log of windowed) {
-      for (const entry of log.entries) {
-        const label = entryLabel(entry);
-        const match = totals.find((k) => k.test.test(label));
-        if (match) match.value += 1;
-      }
-    }
-    return totals.filter((k) => k.value > 0);
-  }, [windowed, entryLabel]);
+    if (!breakdown) return [];
+    const entries = Object.entries(breakdown.by_category)
+      .map(([category, totals]) => ({ category, protein_g: totals.protein_g }))
+      .filter((c) => c.protein_g > 0)
+      .sort((a, b) => b.protein_g - a.protein_g);
 
+    const top = entries.slice(0, 4);
+    const restTotal = entries.slice(4).reduce((sum, c) => sum + c.protein_g, 0);
+    const slices = top.map((c, i) => ({
+      label: CATEGORY_LABELS[c.category] ?? c.category,
+      value: c.protein_g,
+      token: PIE_TOKENS[i],
+    }));
+    if (restTotal > 0) slices.push({ label: t("history.other_category"), value: restTotal, token: PIE_TOKENS[4] });
+    return slices;
+  }, [breakdown, t]);
+
+  // Average of each day's (beverage kcal / total kcal), not a name-match
+  // guess -- beverage_kcal_by_date already only counts entries that are
+  // either a beverage-builder recipe (meal_type == "beverage") or a raw
+  // ingredient with category == "beverage_base".
   const beverageDayStat = useMemo(() => {
-    const daysWithBeverageInfo = windowed.filter((l) => l.computed_totals.energy_kcal > 0);
-    if (daysWithBeverageInfo.length === 0) return null;
-    // Without a per-entry kcal breakdown, approximate using entries whose
-    // resolved name matches common beverage words -- an honest
-    // simplification, not a true per-entry kcal split.
-    const beverageWords = /chai|coffee|tea|lassi|juice|shake|buttermilk|nimbu|beer|wine|whisky|rum|vodka|gin/i;
-    let flaggedDays = 0;
-    for (const log of daysWithBeverageInfo) {
-      if (log.entries.some((e) => beverageWords.test(entryLabel(e)))) flaggedDays += 1;
-    }
-    return Math.round((100 * flaggedDays) / daysWithBeverageInfo.length);
-  }, [windowed, entryLabel]);
+    if (!breakdown) return null;
+    const days = Object.entries(breakdown.total_kcal_by_date).filter(([, kcal]) => kcal > 0);
+    if (days.length === 0) return null;
+    const avgPct =
+      days.reduce((sum, [date, totalKcal]) => sum + (100 * (breakdown.beverage_kcal_by_date[date] ?? 0)) / totalKcal, 0) / days.length;
+    return Math.round(avgPct);
+  }, [breakdown]);
 
   const fastingAdherence = useMemo(() => {
     if (!profile || profile.fasting_protocol === "none") return null;

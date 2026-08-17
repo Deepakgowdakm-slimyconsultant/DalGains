@@ -507,6 +507,30 @@ def test_get_log_day(client):
     assert r.status_code == 200
 
 
+def test_get_category_breakdown(client):
+    post = client.post("/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"})
+    date = post.json()["log_id"]
+    ingredient = client.get("/ingredients/B021").json()
+
+    r = client.get(f"/logs/apitest/category_breakdown/{date}/{date}")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["by_category"]["dal"]["protein_g"] == pytest.approx(ingredient["protein_g_per_100g"])
+    assert body["beverage_kcal_by_date"][date] == pytest.approx(0.0)
+    assert body["total_kcal_by_date"][date] == pytest.approx(ingredient["energy_kcal_per_100g"])
+
+
+def test_get_category_breakdown_invalid_date_returns_422(client):
+    r = client.get("/logs/apitest/category_breakdown/not-a-date/2026-01-07")
+    assert r.status_code == 422
+
+
+def test_get_category_breakdown_empty_for_new_user(client):
+    r = client.get("/logs/nobody-yet/category_breakdown/2026-01-01/2026-01-07")
+    assert r.status_code == 200
+    assert r.json() == {"by_category": {}, "beverage_kcal_by_date": {}, "total_kcal_by_date": {}}
+
+
 def test_get_log_day_missing_returns_404(client):
     r = client.get("/logs/apitest/day/2020-01-01")
     assert r.status_code == 404

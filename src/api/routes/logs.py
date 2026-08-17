@@ -4,7 +4,7 @@ from typing import Optional, Union
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from src.core.schemas import LogEntry, MealLog, QuarantinedLog, WeeklySummary
+from src.core.schemas import LogEntry, MealLog, NutritionTotals, QuarantinedLog, WeeklySummary
 from src.logging import engine
 
 router = APIRouter(prefix="/logs", tags=["logs"])
@@ -12,6 +12,12 @@ router = APIRouter(prefix="/logs", tags=["logs"])
 
 class TagDayRequest(BaseModel):
     tag: str
+
+
+class CategoryBreakdown(BaseModel):
+    by_category: dict[str, NutritionTotals]
+    beverage_kcal_by_date: dict[str, float]
+    total_kcal_by_date: dict[str, float]
 
 
 @router.post("/{user_id}/entries", response_model=MealLog, status_code=201)
@@ -66,6 +72,21 @@ def get_range(user_id: str, start: str, end: str) -> list[Union[MealLog, Quarant
         return engine.get_range(user_id, start, end)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.get("/{user_id}/category_breakdown/{start}/{end}", response_model=CategoryBreakdown)
+def get_category_breakdown(user_id: str, start: str, end: str) -> CategoryBreakdown:
+    """True per-ingredient-category nutrition attribution across a date
+    range -- backs History's Patterns tab (protein sources, beverage-day
+    %). Every entry resolves down to its actual ingredient composition
+    (recipes ingredient-by-ingredient, same math compute_nutrition
+    uses) rather than guessing a category from the entry's display name.
+    """
+    try:
+        result = engine.category_breakdown(user_id, start, end)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+    return CategoryBreakdown(**result)
 
 
 @router.get("/{user_id}/week/{week_ending}", response_model=WeeklySummary)

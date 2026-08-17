@@ -447,6 +447,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/logs/{user_id}/category_breakdown/{start}/{end}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Category Breakdown
+         * @description True per-ingredient-category nutrition attribution across a date
+         *     range -- backs History's Patterns tab (protein sources, beverage-day
+         *     %). Every entry resolves down to its actual ingredient composition
+         *     (recipes ingredient-by-ingredient, same math compute_nutrition
+         *     uses) rather than guessing a category from the entry's display name.
+         */
+        get: operations["get_category_breakdown_logs__user_id__category_breakdown__start___end__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/logs/{user_id}/week/{week_ending}": {
         parameters: {
             query?: never;
@@ -624,6 +648,21 @@ export interface components {
              * @enum {string}
              */
             method: "photo_reference" | "measured" | "estimated";
+        };
+        /** CategoryBreakdown */
+        CategoryBreakdown: {
+            /** By Category */
+            by_category: {
+                [key: string]: components["schemas"]["NutritionTotals"];
+            };
+            /** Beverage Kcal By Date */
+            beverage_kcal_by_date: {
+                [key: string]: number;
+            };
+            /** Total Kcal By Date */
+            total_kcal_by_date: {
+                [key: string]: number;
+            };
         };
         /** ChaiRequest */
         ChaiRequest: {
@@ -2132,6 +2171,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": (components["schemas"]["MealLog"] | components["schemas"]["QuarantinedLog"])[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_category_breakdown_logs__user_id__category_breakdown__start___end__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+                start: string;
+                end: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryBreakdown"];
                 };
             };
             /** @description Validation Error */

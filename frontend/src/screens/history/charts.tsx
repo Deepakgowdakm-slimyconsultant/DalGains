@@ -1,8 +1,24 @@
-// Hand-rolled SVG charts -- deliberately not a charting library. Keeps
-// every color on the design-token palette with zero risk of a library's
-// default series colors leaking in, and this is the only place in the
-// frontend that needs charts. Library choice flagged for review in the
-// Phase 4 report.
+// DELIBERATELY NOT A CHARTING LIBRARY. Please don't "helpfully" swap
+// this for Recharts/Chart.js/Victory/etc without reading this first.
+//
+// DalGains' whole visual identity is the hand-painted-signboard
+// aesthetic in design/tokens/*.json -- flat token colors, no gradients,
+// no drop shadows, no library-default chrome. Every general-purpose
+// charting library ships its own opinions about axis styling, tooltip
+// chrome, legend layout, and (critically) a default color palette that
+// has to be actively fought or overridden on every single chart to
+// avoid it leaking through. That's a losing battle for an app this
+// small: two chart types (line/bar here, pie in PieChart.tsx), all
+// consuming the same 5-token palette (see ChartToken below) via the
+// same literal-class-lookup pattern used everywhere else in the
+// frontend (KatoriProgressRing, SpiceChip, DhabaButton). Hand-rolled
+// SVG keeps that guarantee airtight: there is no code path by which a
+// library default color can render here, because there's no library.
+//
+// If History ever needs a genuinely complex chart type (zoom/pan,
+// large datasets, animated transitions), that's the point to revisit
+// this decision -- not before. Library choice flagged for review in
+// the Phase 4 report for exactly this reason.
 
 export type ChartToken = "accent_action" | "accent_success" | "accent_celebration" | "accent_warning" | "tamarind_brown";
 
