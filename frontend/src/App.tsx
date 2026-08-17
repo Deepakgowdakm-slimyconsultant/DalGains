@@ -5,6 +5,7 @@ import { Onboarding } from "./screens/Onboarding";
 import { Home } from "./screens/Home";
 import { Weekly } from "./screens/Weekly";
 import { Insights } from "./screens/Insights";
+import { Profile } from "./screens/Profile";
 import { getCurrentUserId } from "./lib/currentUser";
 
 // Temporary placeholder for routes not yet built in Part C -- replaced
@@ -35,7 +36,7 @@ function App() {
             <Route path="/weekly" element={<Weekly />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/history/*" element={<ComingSoon label="History" />} />
-            <Route path="/profile" element={<ComingSoon label="Profile" />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
       </BrowserRouter>

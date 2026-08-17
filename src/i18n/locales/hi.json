@@ -102,5 +102,17 @@
   "insight.show_why": "क्यों, देखें",
   "insight.restore": "वापस लाएं",
   "insight.none": "अभी कोई जानकारी नहीं -- दर्ज करते रहें, ये यहां दिखने लगेंगी",
-  "insight.dismissed_today": "आज हटाई गईं"
+  "insight.dismissed_today": "आज हटाई गईं",
+  "profile.your_details": "आपका विवरण",
+  "profile.calibration": "आपकी कटोरी, गिलास और चम्मच का आकार",
+  "profile.dark_mode": "डार्क मोड",
+  "profile.data": "आपका डेटा",
+  "profile.export_data": "मेरा डेटा निर्यात करें",
+  "profile.reset_data": "सारा डेटा रीसेट करें",
+  "profile.reset_confirm": "इससे आपकी प्रोफ़ाइल हट जाएगी और सब कुछ नए सिरे से शुरू होगा -- इसे पूर्ववत नहीं किया जा सकता। क्या आप निश्चित हैं?",
+  "profile.reset_confirm_button": "हां, सब कुछ रीसेट करें",
+  "profile.about": "जानकारी",
+  "profile.license_notice": "DalGains एक मुफ़्त, ओपन-सोर्स सॉफ़्टवेयर है जो AGPL-3.0 के तहत लाइसेंस प्राप्त है। पोषण डेटा IFCT 2017 (भारतीय खाद्य संघटन तालिकाएं, ICMR-राष्ट्रीय पोषण संस्थान) से है, और USDA डेटा केवल उन सामग्रियों के लिए उपयोग किया जाता है जो IFCT में शामिल नहीं हैं।",
+  "profile.medical_disclaimer": "यह ऐप चिकित्सीय सलाह नहीं है। अपने लिए विशेष चिकित्सीय या पोषण मार्गदर्शन हेतु किसी डॉक्टर या पंजीकृत आहार विशेषज्ञ से बात करें।",
+  "profile.default_label": "डिफ़ॉल्ट"
 }

@@ -102,5 +102,17 @@
   "insight.show_why": "Show why",
   "insight.restore": "Bring back",
   "insight.none": "No insights right now -- keep logging and they'll show up here",
-  "insight.dismissed_today": "Dismissed today"
+  "insight.dismissed_today": "Dismissed today",
+  "profile.your_details": "Your details",
+  "profile.calibration": "Your katori, glass and spoon sizes",
+  "profile.dark_mode": "Dark mode",
+  "profile.data": "Your data",
+  "profile.export_data": "Export my data",
+  "profile.reset_data": "Reset all data",
+  "profile.reset_confirm": "This deletes your profile and starts over -- it can't be undone. Are you sure?",
+  "profile.reset_confirm_button": "Yes, reset everything",
+  "profile.about": "About",
+  "profile.license_notice": "DalGains is free, open-source software licensed under AGPL-3.0. Nutrition data is from IFCT 2017 (Indian Food Composition Tables, ICMR-National Institute of Nutrition), with USDA data used only for ingredients IFCT doesn't cover.",
+  "profile.medical_disclaimer": "This app is not medical advice. Talk to a doctor or registered dietitian for medical or nutrition guidance specific to you.",
+  "profile.default_label": "default"
 }
