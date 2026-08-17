@@ -49,6 +49,34 @@ export async function onboardUser(page: Page, name = "E2E Test User") {
   await page.waitForURL("**/");
 }
 
+/** Creates an onboarded profile directly against the real backend and
+ * seeds localStorage with its user_id, skipping the UI wizard entirely.
+ * Used by the accessibility sweep, which needs many independent
+ * onboarded sessions (one per route/theme) rather than one shared
+ * session navigated repeatedly -- see accessibility.spec.ts for why. */
+export async function onboardViaApi(page: Page, userId: string, name = "Axe User") {
+  const profile = {
+    user_id: userId,
+    name,
+    age: 30,
+    sex: "female",
+    height_cm: 165,
+    weight_kg: 60,
+    body_type: "mesomorph",
+    activity_level: "moderate",
+    goal: "maintain",
+    dietary_pattern: "vegetarian",
+    eating_phase: "maintenance",
+    fasting_protocol: "none",
+    medical_flags: [],
+  };
+  const response = await page.request.post("http://localhost:8000/profile", { data: profile });
+  if (!response.ok()) {
+    throw new Error(`onboardViaApi: POST /profile failed with ${response.status()}`);
+  }
+  await page.addInitScript((uid: string) => localStorage.setItem("dalgains_user_id", uid), userId);
+}
+
 export interface AxeViolation {
   id: string;
   impact: string | null;
