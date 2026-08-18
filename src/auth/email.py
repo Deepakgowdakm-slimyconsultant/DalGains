@@ -5,9 +5,10 @@ RESEND_API_KEY isn't set, which is every local-dev run by default --
 nobody needs a real Resend account just to run the app on their laptop.
 """
 import logging
-import os
 
 import httpx
+
+from src.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ FROM_ADDRESS = "DalGains <onboarding@resend.dev>"
 
 
 def send_magic_link(email: str, link: str) -> None:
-    api_key = os.environ.get("RESEND_API_KEY")
+    api_key = get_settings().RESEND_API_KEY
     if not api_key:
         logger.info("RESEND_API_KEY not set -- logging magic link instead of emailing it.")
         print(f"\n[dev-only] Magic link for {email}:\n  {link}\n")

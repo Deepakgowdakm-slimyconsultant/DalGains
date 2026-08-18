@@ -4,7 +4,6 @@ Security posture: magic-link auth, invite-only, since Phase 5 (see
 README.md's "Security posture" section). Every route with a {user_id}
 path param is gated by src.auth.dependencies.require_own_user.
 """
-import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -13,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.api.routes import auth, beverages, ingredients, insights, logs, profile, units
 from src.api.routes import recipes as recipes_routes
 from src.auth import invitation
+from src.config import get_settings
 from src.core.ingredients import load_ingredients
 from src.i18n.loader import load_all_locales
 from src.recipes.builder import list_recipes
@@ -28,9 +28,11 @@ load_all_locales()
 
 @asynccontextmanager
 async def _lifespan(app: FastAPI):
-    admin_email = os.environ.get("ADMIN_EMAIL", "").lower()
-    if admin_email and not invitation.is_invited(admin_email):
-        invitation.invite(admin_email, invited_by="system")
+    admin_email = get_settings().ADMIN_EMAIL
+    if admin_email:
+        admin_email = admin_email.lower()
+        if not invitation.is_invited(admin_email):
+            invitation.invite(admin_email, invited_by="system")
     yield
 
 

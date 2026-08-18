@@ -4,21 +4,20 @@ can't steal it). Distinct from magic_link.py's short-lived,
 single-purpose login tokens; this is the longer-lived "you're logged
 in" credential.
 """
-import os
 from datetime import datetime, timedelta, timezone
 
 from jose import JWTError, jwt
+
+from src.config import get_settings
 
 _ALGORITHM = "HS256"
 _PURPOSE = "session"
 SESSION_EXPIRY = timedelta(days=7)
 SESSION_COOKIE_NAME = "dalgains_session"
 
-_DEV_INSECURE_SECRET = "dev-insecure-secret-do-not-use-in-production"
-
 
 def _secret() -> str:
-    return os.environ.get("JWT_SECRET", _DEV_INSECURE_SECRET)
+    return get_settings().JWT_SECRET
 
 
 def create_session_token(user_id: str) -> str:

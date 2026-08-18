@@ -1,4 +1,3 @@
-import os
 import sys
 from logging.config import fileConfig
 from pathlib import Path
@@ -11,6 +10,7 @@ from alembic import context
 # Repo root isn't on sys.path when alembic runs from src/db/migrations/.
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
+from src.config import get_settings  # noqa: E402
 from src.db.models import Base  # noqa: E402
 
 # src.auth.models (Phase 5B) defines its tables on this same Base --
@@ -30,11 +30,10 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# DATABASE_URL is the single source of truth (src/db/session.py reads
-# the same var) -- alembic.ini intentionally leaves sqlalchemy.url unset.
-config.set_main_option(
-    "sqlalchemy.url", os.environ.get("DATABASE_URL", "sqlite:///./data/dalgains.db")
-)
+# src.config.Settings is the single source of truth for DATABASE_URL
+# (src/db/session.py reads the same setting) -- alembic.ini
+# intentionally leaves sqlalchemy.url unset.
+config.set_main_option("sqlalchemy.url", get_settings().DATABASE_URL)
 
 target_metadata = Base.metadata
 

@@ -2,28 +2,20 @@
 verifying one is just checking the signature and expiry, no DB lookup
 needed to know it's genuine (the DB lookup that follows is for invite/
 account status, a separate question from "is this token real").
-
-JWT_SECRET is read directly from the environment here (same reasoning
-as src/db/session.py's DATABASE_URL) -- Part C's config module
-consolidates this without changing this module's public API.
 """
-import os
 from datetime import datetime, timedelta, timezone
 
 from jose import JWTError, jwt
+
+from src.config import get_settings
 
 _ALGORITHM = "HS256"
 _PURPOSE = "magic_link"
 MAGIC_LINK_EXPIRY = timedelta(hours=24)
 
-# Insecure on purpose as a *default* -- only ever reached in local dev
-# where JWT_SECRET isn't set. Part C's config module refuses to boot in
-# prod without a real secret; this module doesn't duplicate that check.
-_DEV_INSECURE_SECRET = "dev-insecure-secret-do-not-use-in-production"
-
 
 def _secret() -> str:
-    return os.environ.get("JWT_SECRET", _DEV_INSECURE_SECRET)
+    return get_settings().JWT_SECRET
 
 
 def generate_link(email: str) -> str:

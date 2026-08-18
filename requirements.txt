@@ -12,3 +12,5 @@ alembic
 python-jose[cryptography]
 passlib
 email-validator
+python-dotenv
+pydantic-settings

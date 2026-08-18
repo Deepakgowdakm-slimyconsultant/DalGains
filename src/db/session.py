@@ -1,16 +1,9 @@
 """Engine + session factory. One process-wide engine, one SessionLocal.
 
-DATABASE_URL is read directly from the environment here (not through
-src.config) because this module predates Phase 5C's config module in
-the commit order -- Part C later refactors this one read to go through
-pydantic-settings alongside every other env var, without changing this
-module's public API (engine, SessionLocal, get_session).
-
 Importing src.db.session must not have side effects beyond creating the
 engine (no table creation here -- that's alembic's job via `alembic
 upgrade head`, run once at container start, not on every import).
 """
-import os
 from collections.abc import Iterator
 from contextlib import contextmanager
 
@@ -18,7 +11,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./data/dalgains.db")
+from src.config import get_settings
+
+DATABASE_URL = get_settings().DATABASE_URL
 
 # check_same_thread=False: FastAPI can serve a single request's DB calls
 # from more than one thread (it runs sync path operations in a

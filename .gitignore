@@ -8,9 +8,13 @@ venv/
 env/
 *.egg
 
-# Environment
+# Environment -- real .env files are never committed; the .example
+# templates are the documented, checked-in exception (root and
+# frontend/), never a source of real secrets.
 .env
 .env.*
+!.env.example
+!frontend/.env.example
 
 # Testing
 .pytest_cache/

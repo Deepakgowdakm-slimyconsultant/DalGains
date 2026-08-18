@@ -1,7 +1,6 @@
 """Magic-link auth routes: request a link, verify it, log out, check
 who's logged in -- plus admin-only invitation management.
 """
-import os
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -14,17 +13,18 @@ from src.auth.email import send_magic_link
 from src.auth.jwt import SESSION_COOKIE_NAME, SESSION_EXPIRY, create_session_token
 from src.auth.magic_link import generate_link, verify_link
 from src.auth.schemas import Invitation, User
+from src.config import get_settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 
 
 def _app_url() -> str:
-    return os.environ.get("APP_URL", "http://localhost:5173")
+    return get_settings().APP_URL
 
 
 def _is_prod() -> bool:
-    return os.environ.get("ENVIRONMENT", "dev") == "prod"
+    return get_settings().is_prod
 
 
 def _cookie_samesite() -> str:
@@ -89,7 +89,8 @@ def verify(token: str) -> RedirectResponse:
 
     user = store.get_user_by_email(email)
     if user is None:
-        is_admin = email == os.environ.get("ADMIN_EMAIL", "").lower()
+        admin_email = get_settings().ADMIN_EMAIL
+        is_admin = admin_email is not None and email == admin_email.lower()
         user = store.create_user(user_id=str(uuid.uuid4()), email=email, is_admin=is_admin)
         invitation.mark_accepted(email)
 

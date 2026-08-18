@@ -115,20 +115,17 @@ def test_verify_uninvited_email_returns_403(client):
     assert r.status_code == 403
 
 
-def test_verify_admin_email_becomes_admin(client):
-    import os
+def test_verify_admin_email_becomes_admin(client, monkeypatch):
+    from src.config import get_settings
 
     invitation.invite("admin@example.com", invited_by="system")
-    old = os.environ.get("ADMIN_EMAIL")
-    os.environ["ADMIN_EMAIL"] = "admin@example.com"
+    monkeypatch.setenv("ADMIN_EMAIL", "admin@example.com")
+    get_settings.cache_clear()  # get_settings() is lru_cache'd -- see src/config.py
     try:
         token = generate_link("admin@example.com")
         client.get(f"/auth/verify?token={token}", follow_redirects=False)
     finally:
-        if old is None:
-            os.environ.pop("ADMIN_EMAIL", None)
-        else:
-            os.environ["ADMIN_EMAIL"] = old
+        get_settings.cache_clear()
 
     user = store.get_user_by_email("admin@example.com")
     assert user.is_admin is True
