@@ -121,4 +121,17 @@ describe("Profile", () => {
     await screen.findByDisplayValue("Asha");
     expect(screen.getByRole("button", { name: "Invitations" })).toBeInTheDocument();
   });
+
+  it("links to About, Terms and Privacy, each keyboard-activatable", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Profile />);
+    await screen.findByDisplayValue("Asha");
+
+    for (const name of ["About DalGains", "Terms of use", "Privacy policy"]) {
+      const button = screen.getByRole("button", { name });
+      button.focus();
+      expect(button).toHaveFocus();
+      await user.keyboard("{Enter}");
+    }
+  });
 });

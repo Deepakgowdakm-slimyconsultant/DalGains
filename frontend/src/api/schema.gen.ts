@@ -866,6 +866,19 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** HealthResponse */
+        HealthResponse: {
+            /** Status */
+            status: string;
+            /** Ingredient Count */
+            ingredient_count: number;
+            /** Recipe Count */
+            recipe_count: number;
+            /** Version */
+            version: string;
+            /** Admin Contact */
+            admin_contact: string | null;
+        };
         /** HouseholdUnit */
         HouseholdUnit: {
             /** User Id */
@@ -2764,9 +2777,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["HealthResponse"];
                 };
             };
         };

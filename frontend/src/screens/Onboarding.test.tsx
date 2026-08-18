@@ -5,24 +5,67 @@ import { renderWithProviders } from "../test/render";
 import { getCurrentUserId } from "../lib/currentUser";
 import { Onboarding } from "./Onboarding";
 
+/** Every flow starts on the consent step (Part G) before the first real
+ * question -- check the box and confirm to reach "What should we call
+ * you?", exactly like a real user would. */
+async function completeConsent(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("checkbox"));
+  await user.click(screen.getByRole("button", { name: "Confirm" }));
+}
+
 describe("Onboarding", () => {
-  it("shows exactly one question at a time (one-question-per-screen rule)", () => {
+  it("shows the consent step first, then exactly one question at a time (one-question-per-screen rule)", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<Onboarding />);
+    expect(screen.getByRole("heading", { name: "Before you continue" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "What should we call you?" })).not.toBeInTheDocument();
+
+    await completeConsent(user);
     expect(screen.getByRole("heading", { name: "What should we call you?" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "How old are you?" })).not.toBeInTheDocument();
   });
 
-  it("disables Confirm until the current question has an answer", async () => {
+  it("consent step links to Terms and Privacy, both keyboard-reachable", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Onboarding />);
+
+    const termsLink = screen.getByRole("link", { name: "Terms of use" });
+    const privacyLink = screen.getByRole("link", { name: "Privacy policy" });
+    expect(termsLink).toHaveAttribute("href", "/terms");
+    expect(privacyLink).toHaveAttribute("href", "/privacy");
+
+    // Tab order: checkbox -> terms link -> privacy link.
+    await user.tab();
+    expect(screen.getByRole("checkbox")).toHaveFocus();
+    await user.tab();
+    expect(termsLink).toHaveFocus();
+    await user.tab();
+    expect(privacyLink).toHaveFocus();
+  });
+
+  it("disables Confirm on the consent step until the checkbox is checked", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<Onboarding />);
     expect(screen.getByRole("button", { name: "Confirm" })).toBeDisabled();
 
-    await userEvent.setup().type(screen.getByPlaceholderText("Your name"), "Ravi");
+    await user.click(screen.getByRole("checkbox"));
+    expect(screen.getByRole("button", { name: "Confirm" })).toBeEnabled();
+  });
+
+  it("disables Confirm until the current question has an answer", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Onboarding />);
+    await completeConsent(user);
+    expect(screen.getByRole("button", { name: "Confirm" })).toBeDisabled();
+
+    await user.type(screen.getByPlaceholderText("Your name"), "Ravi");
     expect(screen.getByRole("button", { name: "Confirm" })).toBeEnabled();
   });
 
   it("advances name -> age -> sex on successive confirms", async () => {
     const user = userEvent.setup();
     renderWithProviders(<Onboarding />);
+    await completeConsent(user);
 
     await user.type(screen.getByPlaceholderText("Your name"), "Ravi");
     await user.click(screen.getByRole("button", { name: "Confirm" }));
@@ -36,6 +79,7 @@ describe("Onboarding", () => {
   it("renders fasting protocol as a real skippable choice, not a forced field", async () => {
     const user = userEvent.setup();
     renderWithProviders(<Onboarding />);
+    await completeConsent(user);
 
     for (const [placeholder, value] of [
       ["Your name", "Ravi"],
@@ -64,6 +108,7 @@ describe("Onboarding", () => {
   it("submits the profile and persists the user id after completing the flow", async () => {
     const user = userEvent.setup();
     renderWithProviders(<Onboarding />);
+    await completeConsent(user);
 
     for (const [placeholder, value] of [
       ["Your name", "Ravi"],

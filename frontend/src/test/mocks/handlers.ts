@@ -10,6 +10,7 @@ import {
   mockCategoryBreakdown,
   mockWeeklySummary,
   mockUser,
+  mockAdminUser,
 } from "./fixtures";
 
 const BASE = "http://localhost:8000";
@@ -25,6 +26,15 @@ const BASE = "http://localhost:8000";
 // different auth state (unauthenticated, no profile yet, admin)
 // override with server.use(...) -- see App.test.tsx and Login.test.tsx.
 export const handlers = [
+  http.get(`${BASE}/health`, () =>
+    HttpResponse.json({
+      status: "ok",
+      ingredient_count: 1,
+      recipe_count: 1,
+      version: "test",
+      admin_contact: mockAdminUser.email,
+    })
+  ),
   http.get(`${BASE}/auth/me`, () => HttpResponse.json(mockUser)),
   http.post(`${BASE}/auth/request-link`, () => HttpResponse.json({ detail: "sent" })),
   http.post(`${BASE}/auth/logout`, () => new HttpResponse(null, { status: 204 })),

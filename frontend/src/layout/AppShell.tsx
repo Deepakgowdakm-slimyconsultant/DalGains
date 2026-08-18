@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Footer } from "../components/Footer";
 
 interface NavItem {
   to: string;
@@ -25,6 +26,7 @@ export function AppShell() {
     <div className="flex min-h-dvh flex-col bg-surface_primary">
       <main className="flex-1 overflow-y-auto pb-24">
         <Outlet />
+        <Footer />
       </main>
       <nav
         aria-label={t("nav.label")}

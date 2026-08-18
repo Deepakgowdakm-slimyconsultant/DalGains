@@ -4,6 +4,9 @@ import { AppShell } from "./layout/AppShell";
 import { Login } from "./screens/Login";
 import { Onboarding } from "./screens/Onboarding";
 import { Admin } from "./screens/Admin";
+import { About } from "./screens/About";
+import { Terms } from "./screens/Terms";
+import { Privacy } from "./screens/Privacy";
 import { Home } from "./screens/Home";
 import { Weekly } from "./screens/Weekly";
 import { Insights } from "./screens/Insights";
@@ -81,6 +84,11 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          {/* Public -- readable without an account, per DPDP Act 2023
+              transparency expectations and general good practice for
+              legal pages. */}
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route
             path="/onboarding"
             element={
@@ -109,6 +117,7 @@ function App() {
               <Route path="export" element={<Export />} />
             </Route>
             <Route path="/profile" element={<Profile />} />
+            <Route path="/about" element={<About />} />
             <Route
               path="/admin"
               element={

@@ -263,6 +263,17 @@ export function Profile() {
           <p>{t("profile.license_notice")}</p>
           <p className="mt-sm font-semibold">{t("profile.medical_disclaimer")}</p>
         </div>
+        <div className="mt-sm flex flex-col gap-xs">
+          <DhabaButton variant="secondary" onClick={() => navigate("/about")} className="w-full">
+            {t("about.title")}
+          </DhabaButton>
+          <DhabaButton variant="secondary" onClick={() => navigate("/terms")} className="w-full">
+            {t("terms.title")}
+          </DhabaButton>
+          <DhabaButton variant="secondary" onClick={() => navigate("/privacy")} className="w-full">
+            {t("privacy.title")}
+          </DhabaButton>
+        </div>
       </section>
     </div>
   );

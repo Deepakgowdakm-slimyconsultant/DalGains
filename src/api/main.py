@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from src.api.routes import auth, beverages, ingredients, insights, logs, profile, units
 from src.api.routes import recipes as recipes_routes
@@ -72,11 +73,25 @@ app.include_router(auth.router)
 app.include_router(auth.admin_router)
 
 
-@app.get("/health")
-def health() -> dict:
-    return {
-        "status": "ok",
-        "ingredient_count": len(load_ingredients()),
-        "recipe_count": len(list_recipes()),
-        "version": APP_VERSION,
-    }
+class HealthResponse(BaseModel):
+    status: str
+    ingredient_count: int
+    recipe_count: int
+    version: str
+    # Publicly readable on purpose -- the About/Privacy screens show
+    # this as a real contact point for data-access/deletion requests
+    # (Part G), which only works if the frontend can read it without
+    # being logged in. Optional since a deployment can omit ADMIN_EMAIL
+    # in dev.
+    admin_contact: str | None
+
+
+@app.get("/health", response_model=HealthResponse)
+def health() -> HealthResponse:
+    return HealthResponse(
+        status="ok",
+        ingredient_count=len(load_ingredients()),
+        recipe_count=len(list_recipes()),
+        version=APP_VERSION,
+        admin_contact=get_settings().ADMIN_EMAIL,
+    )

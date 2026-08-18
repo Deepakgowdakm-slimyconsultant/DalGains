@@ -26,7 +26,7 @@ describe("App", () => {
   it("redirects to onboarding when authenticated but no profile exists yet", async () => {
     server.use(http.get(`${BASE}/profile/:userId`, () => new HttpResponse(null, { status: 404 })));
     renderAppAt("/");
-    expect(await screen.findByRole("heading", { name: "What should we call you?" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Before you continue" })).toBeInTheDocument();
   });
 
   it("renders Home at / once a profile exists", async () => {

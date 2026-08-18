@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SignboardHeader } from "../components/SignboardHeader";
 import { DhabaButton } from "../components/DhabaButton";
+import { Footer } from "../components/Footer";
 import { requestMagicLink } from "../lib/auth";
 
 /** One question per screen (CLAUDE.md): just an email, then a plain-
@@ -35,6 +36,7 @@ export function Login() {
         <DhabaButton variant="secondary" onClick={() => setSent(false)} className="w-full">
           {t("login.try_different_email")}
         </DhabaButton>
+        <Footer />
       </main>
     );
   }
@@ -63,6 +65,7 @@ export function Login() {
       <DhabaButton onClick={submit} disabled={!email.trim() || saving} className="w-full">
         {saving ? t("common.loading") : t("login.send_link")}
       </DhabaButton>
+      <Footer />
     </main>
   );
 }
