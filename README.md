@@ -1,3 +1,23 @@
+---
+title: DalGains API
+emoji: 🍛
+colorFrom: yellow
+colorTo: red
+sdk: docker
+app_port: 7860
+pinned: false
+license: agpl-3.0
+---
+
+<!--
+The YAML block above is Hugging Face Spaces' required metadata format
+-- HF parses it to render the Space's info card and knows how to build
+the Docker image (see scripts/deploy_hf_spaces.md). Everything below
+is the actual project README; HF shows it as the Space's description.
+Do not remove the frontmatter or move it away from the very top of
+this file -- HF Spaces requires it to be the first thing in README.md.
+-->
+
 # DalGains
 
 Ingredient-first calorie and nutrition tracker for Indian households.
