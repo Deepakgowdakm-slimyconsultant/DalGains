@@ -32,9 +32,12 @@ See [CLAUDE.md](./CLAUDE.md) for full project rules and conventions.
 
 ## Status
 
-Phase 3: household-unit-aware recipe math, meal logging + persistence,
-an insights/recommendations engine, a FastAPI service layer, and design
-tokens + i18n scaffolding for the frontend to come in Phase 4.
+Phase 5 (in progress): zero-cost deployment to Vercel (frontend) and
+Hugging Face Spaces (backend) -- SQLite persistence, magic-link auth,
+production config/CORS/security headers. Phases 1-4 shipped
+household-unit-aware recipe math, meal logging, an insights engine, a
+FastAPI service layer, and the full React/PWA frontend with dark mode
+and accessibility coverage.
 
 ## Security posture (current)
 
@@ -72,5 +75,12 @@ fork.
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+alembic upgrade head   # creates/updates data/dalgains.db
 pytest
 ```
+
+Backend data (profiles, logs, calibrations) lives in a SQLite database
+at `data/dalgains.db` (path configurable via `DATABASE_URL`), managed
+through [alembic](https://alembic.sqlalchemy.org/) migrations under
+`src/db/migrations/`. Tests never touch this file -- they run against
+an in-memory database (see `tests/conftest.py`).

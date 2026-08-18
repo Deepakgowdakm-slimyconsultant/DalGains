@@ -1,17 +1,15 @@
 """Household-unit calibration and volume/mass conversion.
 
-Calibrations are persisted per-user to data/users/{user_id}/household_units.json,
-following the same "flat file under data/" convention as src/recipes/builder.py.
+Calibrations are persisted per-user in SQLite (src.db.repositories),
+one row per (user_id, unit_name).
 
 DEFAULT_UNITS_ML values are ml for every unit except "mutthi": a dry-grains
 handful has no stable volume, so it's resolved as a mass directly (see
 resolve_to_grams and src/core/densities.py's MUTTHI_G_* tables), not a
 volume needing density conversion.
 """
-import json
 import logging
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Optional
 
 from src.core.densities import (
@@ -23,10 +21,9 @@ from src.core.densities import (
     MUTTHI_G_BY_INGREDIENT_ID,
 )
 from src.core.schemas import CalibrationMethod, HouseholdUnit, Ingredient
+from src.db import repositories
 
 logger = logging.getLogger(__name__)
-
-USERS_DIR = Path(__file__).resolve().parents[2] / "data" / "users"
 
 DEFAULT_UNITS_ML = {
     "katori": 150.0,
@@ -45,20 +42,9 @@ MASS_ONLY_UNITS_G = {
 }
 
 
-def _units_path(user_id: str) -> Path:
-    return USERS_DIR / user_id / "household_units.json"
-
-
-def _load_calibrations(user_id: str) -> dict[str, dict]:
-    path = _units_path(user_id)
-    if not path.exists():
-        return {}
-    return json.loads(path.read_text())
-
-
 def get_calibrations(user_id: str) -> dict[str, HouseholdUnit]:
     """All of a user's own unit calibrations (not the defaults)."""
-    return {name: HouseholdUnit(**entry) for name, entry in _load_calibrations(user_id).items()}
+    return repositories.get_calibrations(user_id)
 
 
 def calibrate_unit(
@@ -72,14 +58,7 @@ def calibrate_unit(
         calibrated_at=datetime.now(timezone.utc),
         calibration_method=method,
     )
-
-    path = _units_path(user_id)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    data = _load_calibrations(user_id)
-    data[unit_name] = json.loads(unit.model_dump_json())
-    path.write_text(json.dumps(data, indent=2))
-
-    return unit
+    return repositories.save_calibration(unit)
 
 
 def resolve_unit(user_id: Optional[str], unit_name: str) -> tuple[float, str]:
@@ -92,9 +71,9 @@ def resolve_unit(user_id: Optional[str], unit_name: str) -> tuple[float, str]:
     docstring).
     """
     if user_id is not None:
-        data = _load_calibrations(user_id)
+        data = repositories.get_calibrations(user_id)
         if unit_name in data:
-            return HouseholdUnit(**data[unit_name]).volume_ml, "calibrated"
+            return data[unit_name].volume_ml, "calibrated"
 
     if unit_name in DEFAULT_UNITS_ML:
         return DEFAULT_UNITS_ML[unit_name], "default"

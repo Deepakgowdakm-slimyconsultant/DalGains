@@ -7,3 +7,5 @@ fastapi
 uvicorn
 httpx
 pytest-cov
+sqlalchemy
+alembic

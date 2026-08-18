@@ -6,11 +6,6 @@ import src.core.units as units
 from src.core.ingredients import load_ingredients
 
 
-@pytest.fixture(autouse=True)
-def isolated_users_dir(tmp_path, monkeypatch):
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
-
-
 @pytest.fixture(scope="module")
 def ingredients():
     return load_ingredients()
@@ -49,10 +44,9 @@ def test_unknown_unit_with_no_calibration_raises():
         units.resolve_unit("alice", "not_a_real_unit")
 
 
-def test_calibrate_unit_persists_to_disk():
+def test_calibrate_unit_persists():
     unit = units.calibrate_unit("alice", "glass", volume_ml=220, method="photo_reference")
-    path = units._units_path("alice")
-    assert path.exists()
+    assert units.get_calibrations("alice")["glass"].volume_ml == 220
     assert unit.calibration_method == "photo_reference"
 
 

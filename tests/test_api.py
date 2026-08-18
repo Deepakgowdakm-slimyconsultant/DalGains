@@ -4,10 +4,6 @@ import shutil
 import pytest
 from fastapi.testclient import TestClient
 
-import src.core.profiles as profiles
-import src.core.units as units
-import src.core.weight_log as weight_log
-import src.logging.store as store
 import src.recipes.builder as builder
 
 REAL_RECIPES_DIR = builder.RECIPES_DIR
@@ -15,11 +11,6 @@ REAL_RECIPES_DIR = builder.RECIPES_DIR
 
 @pytest.fixture(autouse=True)
 def isolated_data_dirs(tmp_path, monkeypatch):
-    monkeypatch.setattr(store, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(profiles, "USERS_DIR", tmp_path / "users")
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
-    monkeypatch.setattr(weight_log, "USERS_DIR", tmp_path / "users")
-
     # Copy the real seeded recipes into the isolated dir so read tests
     # (get_recipe, nutrition, ...) see realistic data, while writes
     # (create/update/delete) stay isolated from the real data/recipes/.
@@ -603,13 +594,24 @@ def test_get_log_week_invalid_date_returns_422(client):
 
 def test_post_log_entry_on_quarantined_day_returns_409(client):
     # No timestamp in the request body -> defaults to "now", so the
-    # quarantined file has to be today's, not a fixed date.
-    import src.logging.store as store
-    from datetime import date
+    # quarantined row has to be today's, not a fixed date.
+    from datetime import date, datetime, timezone
 
-    path = store._log_path("apitest", date.today().isoformat())
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("{corrupt")
+    from src.db.models import MealLogRow
+    from src.db.session import get_session
+
+    with get_session() as session:
+        session.add(
+            MealLogRow(
+                user_id="apitest",
+                log_id=date.today().isoformat(),
+                timestamp=datetime.now(timezone.utc),
+                entries=[],
+                computed_totals={"energy_kcal": 0, "protein_g": 0, "fat_g": 0, "carbs_g": 0, "fiber_g": 0},
+                notes=None,
+                tags=[],
+            )
+        )
     r = client.post("/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"})
     assert r.status_code == 409
 
