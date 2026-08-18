@@ -9,3 +9,6 @@ httpx
 pytest-cov
 sqlalchemy
 alembic
+python-jose[cryptography]
+passlib
+email-validator

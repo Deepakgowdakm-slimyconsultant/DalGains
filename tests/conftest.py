@@ -14,6 +14,7 @@ os.environ["DATABASE_URL"] = "sqlite://"
 
 import pytest  # noqa: E402
 
+import src.auth.models  # noqa: E402, F401 -- registers users/invitations on Base.metadata
 from src.db.models import Base  # noqa: E402
 from src.db.session import engine  # noqa: E402
 

@@ -1,20 +1,23 @@
 """FastAPI app entry point.
 
-Security posture: no auth. See README.md's "Security posture (current)"
-section -- DalGains is a local-first, single-household app; this API is
-meant to run on localhost for a local frontend, not to be exposed on a
-public network without adding authentication first.
+Security posture: magic-link auth, invite-only, since Phase 5 (see
+README.md's "Security posture" section). Every route with a {user_id}
+path param is gated by src.auth.dependencies.require_own_user.
 """
+import os
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.routes import beverages, ingredients, insights, logs, profile, units
+from src.api.routes import auth, beverages, ingredients, insights, logs, profile, units
 from src.api.routes import recipes as recipes_routes
+from src.auth import invitation
 from src.core.ingredients import load_ingredients
 from src.i18n.loader import load_all_locales
 from src.recipes.builder import list_recipes
 
-APP_VERSION = "0.3.0"  # Phase 3
+APP_VERSION = "0.4.0"  # Phase 5
 
 # "On app start, assert every key in en.json exists in hi.json and
 # kn.json" (Phase 3 brief) -- runs at import time, before the app object
@@ -22,7 +25,16 @@ APP_VERSION = "0.3.0"  # Phase 3
 # silently fall back to English string-by-string.
 load_all_locales()
 
-app = FastAPI(title="DalGains API", version=APP_VERSION)
+
+@asynccontextmanager
+async def _lifespan(app: FastAPI):
+    admin_email = os.environ.get("ADMIN_EMAIL", "").lower()
+    if admin_email and not invitation.is_invited(admin_email):
+        invitation.invite(admin_email, invited_by="system")
+    yield
+
+
+app = FastAPI(title="DalGains API", version=APP_VERSION, lifespan=_lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,6 +51,8 @@ app.include_router(profile.router)
 app.include_router(units.router)
 app.include_router(logs.router)
 app.include_router(insights.router)
+app.include_router(auth.router)
+app.include_router(auth.admin_router)
 
 
 @app.get("/health")
