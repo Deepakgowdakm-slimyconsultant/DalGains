@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 import src.core.profiles as profiles
 import src.core.units as units
+import src.core.weight_log as weight_log
 import src.logging.store as store
 import src.recipes.builder as builder
 
@@ -17,6 +18,7 @@ def isolated_data_dirs(tmp_path, monkeypatch):
     monkeypatch.setattr(store, "LOGS_DIR", tmp_path / "logs")
     monkeypatch.setattr(profiles, "USERS_DIR", tmp_path / "users")
     monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
+    monkeypatch.setattr(weight_log, "USERS_DIR", tmp_path / "users")
 
     # Copy the real seeded recipes into the isolated dir so read tests
     # (get_recipe, nutrition, ...) see realistic data, while writes
@@ -98,6 +100,43 @@ def test_get_ingredient_by_id(client):
 def test_get_ingredient_missing_returns_404(client):
     r = client.get("/ingredients/NOPE999")
     assert r.status_code == 404
+
+
+def test_get_ingredient_nutrition_resolves_grams(client):
+    # B021 (toor dal) has energy_kcal_per_100g -- 100g should return
+    # exactly that value.
+    ingredient = client.get("/ingredients/B021").json()
+    r = client.get("/ingredients/B021/nutrition", params={"qty": 100, "unit": "g"})
+    assert r.status_code == 200
+    assert r.json()["energy_kcal"] == pytest.approx(ingredient["energy_kcal_per_100g"])
+
+
+def test_get_ingredient_nutrition_katori_matches_default_calibration(client):
+    grams = client.get("/ingredients/B021/nutrition", params={"qty": 150, "unit": "g"}).json()
+    katori = client.get("/ingredients/B021/nutrition", params={"qty": 1, "unit": "katori"}).json()
+    assert katori == grams
+
+
+def test_get_ingredient_nutrition_honors_user_calibration(client):
+    client.post(
+        "/units/alice", json={"unit_name": "katori", "volume_ml": 200, "method": "measured"}
+    )
+    default = client.get("/ingredients/B021/nutrition", params={"qty": 1, "unit": "katori"}).json()
+    alice = client.get(
+        "/ingredients/B021/nutrition", params={"qty": 1, "unit": "katori", "user_id": "alice"}
+    ).json()
+    assert alice["energy_kcal"] > default["energy_kcal"]
+
+
+def test_get_ingredient_nutrition_missing_ingredient_returns_404(client):
+    r = client.get("/ingredients/NOPE999/nutrition", params={"qty": 100, "unit": "g"})
+    assert r.status_code == 404
+
+
+def test_get_ingredient_nutrition_unresolvable_unit_returns_422(client):
+    # B021 (toor dal) has no per_piece_g set.
+    r = client.get("/ingredients/B021/nutrition", params={"qty": 1, "unit": "piece"})
+    assert r.status_code == 422
 
 
 # --- /recipes -------------------------------------------------------------
@@ -370,6 +409,24 @@ def test_get_plan_missing_profile_returns_404(client):
     assert r.status_code == 404
 
 
+def test_get_weight_empty_for_user_who_never_logged(client):
+    r = client.get("/profile/apitest/weight")
+    assert r.status_code == 200
+    assert r.json() == {}
+
+
+def test_post_and_get_weight(client):
+    r = client.post("/profile/apitest/weight", json={"user_id": "apitest", "date": "2026-01-01", "weight_kg": 70.5})
+    assert r.status_code == 201
+    r2 = client.get("/profile/apitest/weight")
+    assert r2.json() == {"2026-01-01": 70.5}
+
+
+def test_post_weight_mismatched_user_id_returns_400(client):
+    r = client.post("/profile/apitest/weight", json={"user_id": "someone-else", "date": "2026-01-01", "weight_kg": 70})
+    assert r.status_code == 400
+
+
 # --- /units ------------------------------------------------------------
 
 
@@ -404,6 +461,30 @@ def test_post_log_entry(client):
     assert r.json()["computed_totals"]["energy_kcal"] > 0
 
 
+def test_post_log_entry_honors_client_supplied_timestamp(client):
+    # The frontend's log flow lets a user backfill an entry against a
+    # chosen time (e.g. a one-tap meal slot) rather than always "now" --
+    # the route must forward entry.timestamp through to the log, not
+    # silently overwrite it with the current time.
+    r = client.post(
+        "/logs/apitest/entries",
+        json={
+            "ingredient_id": "B021",
+            "qty": 100,
+            "unit": "g",
+            "timestamp": "2026-01-01T13:00:00Z",
+        },
+    )
+    assert r.status_code == 201
+    assert r.json()["entries"][0]["timestamp"] == "2026-01-01T13:00:00Z"
+
+
+def test_post_log_entry_defaults_timestamp_to_now(client):
+    r = client.post("/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"})
+    assert r.status_code == 201
+    assert r.json()["entries"][0]["timestamp"] is not None
+
+
 def test_post_log_entry_both_ids_returns_422(client):
     r = client.post(
         "/logs/apitest/entries",
@@ -426,9 +507,83 @@ def test_get_log_day(client):
     assert r.status_code == 200
 
 
+def test_get_category_breakdown(client):
+    post = client.post("/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"})
+    date = post.json()["log_id"]
+    ingredient = client.get("/ingredients/B021").json()
+
+    r = client.get(f"/logs/apitest/category_breakdown/{date}/{date}")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["by_category"]["dal"]["protein_g"] == pytest.approx(ingredient["protein_g_per_100g"])
+    assert body["beverage_kcal_by_date"][date] == pytest.approx(0.0)
+    assert body["total_kcal_by_date"][date] == pytest.approx(ingredient["energy_kcal_per_100g"])
+
+
+def test_get_category_breakdown_invalid_date_returns_422(client):
+    r = client.get("/logs/apitest/category_breakdown/not-a-date/2026-01-07")
+    assert r.status_code == 422
+
+
+def test_get_category_breakdown_empty_for_new_user(client):
+    r = client.get("/logs/nobody-yet/category_breakdown/2026-01-01/2026-01-07")
+    assert r.status_code == 200
+    assert r.json() == {"by_category": {}, "beverage_kcal_by_date": {}, "total_kcal_by_date": {}}
+
+
 def test_get_log_day_missing_returns_404(client):
     r = client.get("/logs/apitest/day/2020-01-01")
     assert r.status_code == 404
+
+
+def test_post_day_tag(client):
+    post = client.post("/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"})
+    date = post.json()["log_id"]
+    r = client.post(f"/logs/apitest/day/{date}/tags", json={"tag": "diwali"})
+    assert r.status_code == 200
+    assert "diwali" in r.json()["tags"]
+
+
+def test_post_day_tag_missing_day_returns_404(client):
+    r = client.post("/logs/apitest/day/2020-01-01/tags", json={"tag": "diwali"})
+    assert r.status_code == 404
+
+
+def test_get_logged_dates(client):
+    post = client.post(
+        "/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"}
+    )
+    date = post.json()["log_id"]
+    r = client.get("/logs/apitest/dates")
+    assert r.status_code == 200
+    assert date in r.json()
+
+
+def test_get_logged_dates_empty_for_new_user(client):
+    r = client.get("/logs/nobody-yet/dates")
+    assert r.status_code == 200
+    assert r.json() == []
+
+
+def test_get_log_range(client):
+    post = client.post(
+        "/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"}
+    )
+    date = post.json()["log_id"]
+    r = client.get(f"/logs/apitest/range/{date}/{date}")
+    assert r.status_code == 200
+    assert len(r.json()) == 1
+
+
+def test_get_log_range_skips_missing_days(client):
+    r = client.get("/logs/nobody-yet/range/2020-01-01/2020-01-07")
+    assert r.status_code == 200
+    assert r.json() == []
+
+
+def test_get_log_range_invalid_date_returns_422(client):
+    r = client.get("/logs/apitest/range/not-a-date/2020-01-07")
+    assert r.status_code == 422
 
 
 def test_get_log_week(client):
@@ -447,8 +602,8 @@ def test_get_log_week_invalid_date_returns_422(client):
 
 
 def test_post_log_entry_on_quarantined_day_returns_409(client):
-    # POST always logs to "now" (the route has no way to override the
-    # date), so the quarantined file has to be today's, not a fixed date.
+    # No timestamp in the request body -> defaults to "now", so the
+    # quarantined file has to be today's, not a fixed date.
     import src.logging.store as store
     from datetime import date
 

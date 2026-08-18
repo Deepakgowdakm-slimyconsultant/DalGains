@@ -60,3 +60,16 @@ def delete_day(user_id: str, date: str) -> None:
     path = _log_path(user_id, date)
     if path.exists():
         path.unlink()
+
+
+def list_dates(user_id: str) -> list[str]:
+    """Every date (YYYY-MM-DD, most recent first) that has a log file for
+    this user -- quarantined or not; callers that only want real logs
+    should filter with load_day(). Backs the History timeline's
+    infinite scroll, which needs to know what dates exist before it can
+    page through them.
+    """
+    user_dir = LOGS_DIR / user_id
+    if not user_dir.exists():
+        return []
+    return sorted((p.stem for p in user_dir.glob("*.json")), reverse=True)

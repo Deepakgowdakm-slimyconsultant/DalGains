@@ -3,7 +3,8 @@ from fastapi import APIRouter, HTTPException, Response
 
 from src.core.planning import PlanRecommendation, generate_plan
 from src.core.profiles import delete_profile, load_profile, save_profile
-from src.core.schemas import UserProfile
+from src.core.schemas import UserProfile, WeightEntry
+from src.core.weight_log import get_weight_log, save_weight
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
@@ -50,3 +51,17 @@ def get_plan(user_id: str) -> PlanRecommendation:
     if profile is None:
         raise HTTPException(status_code=404, detail=f"No profile for {user_id!r}")
     return generate_plan(profile)
+
+
+@router.get("/{user_id}/weight", response_model=dict[str, float])
+def get_weight(user_id: str) -> dict[str, float]:
+    """Every weight this user has logged, keyed by date. Empty if
+    they've never used the optional weight-logging feature."""
+    return get_weight_log(user_id)
+
+
+@router.post("/{user_id}/weight", response_model=WeightEntry, status_code=201)
+def post_weight(user_id: str, entry: WeightEntry) -> WeightEntry:
+    if entry.user_id != user_id:
+        raise HTTPException(status_code=400, detail="user_id in body must match path")
+    return save_weight(entry)

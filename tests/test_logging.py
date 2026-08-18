@@ -169,6 +169,18 @@ def test_get_range_skips_missing_days():
     assert {r.log_id for r in results} == {"2026-01-01", "2026-01-03"}
 
 
+def test_list_logged_dates_most_recent_first():
+    engine.log_ingredient("alice", "B021", 100, "g", when=_dt("2026-01-01"))
+    engine.log_ingredient("alice", "B021", 100, "g", when=_dt("2026-01-03"))
+    engine.log_ingredient("alice", "B021", 100, "g", when=_dt("2026-01-02"))
+
+    assert engine.list_logged_dates("alice") == ["2026-01-03", "2026-01-02", "2026-01-01"]
+
+
+def test_list_logged_dates_empty_for_new_user():
+    assert engine.list_logged_dates("nobody-yet") == []
+
+
 def test_get_week_returns_weekly_summary():
     engine.log_ingredient("alice", "B021", 100, "g", when=_dt("2026-01-01"))
     summary = engine.get_week("alice", "2026-01-07")

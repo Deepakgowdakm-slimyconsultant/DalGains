@@ -1,17 +1,26 @@
 """Locale loading + load-time key-completeness validation.
 
-Kannada ("kn") is the primary locale (Karnataka-first, per the Phase 3
-brief). Hindi ("hi") is secondary. English ("en") is the fallback for
-technical strings -- and also the reference key set every other locale
-is validated against, since it's expected to always be complete first.
+English ("en") is the default, canonical locale everywhere -- every
+screen, ingredient name, and insight message renders in English unless
+the user actively switches. Kannada ("kn") and Hindi ("hi") are opt-in
+secondary locales for users who want them, exposed via a language
+switcher; they are not the default experience.
+
+(Phase 3 originally shipped this the other way around -- Kannada as
+primary -- which didn't match the actual product intent. Corrected in
+Phase 4: see src/i18n/README.md precedence note.)
+
+English is also the reference key set every other locale is validated
+against, since it's expected to always be complete first and new keys
+must land there before hi/kn.
 """
 import json
 from pathlib import Path
 from typing import Optional
 
 LOCALES_DIR = Path(__file__).resolve().parent / "locales"
-SUPPORTED_LOCALES = ["kn", "hi", "en"]
-PRIMARY_LOCALE = "kn"
+SUPPORTED_LOCALES = ["en", "hi", "kn"]
+PRIMARY_LOCALE = "en"
 FALLBACK_LOCALE = "en"
 
 MISSING_KEYS_REPORT_PATH = Path(__file__).resolve().parent / "missing_keys_report.json"
