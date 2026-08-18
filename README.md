@@ -41,17 +41,29 @@ and accessibility coverage.
 
 ## Security posture (current)
 
-**The API (`src/api/`) has no authentication or authorization.** Any
-request that reaches it can read or write any user's profile, logs, or
-calibrations. This is intentional for now, not an oversight: DalGains is
-a local-first, single-household app (see CLAUDE.md's engineering
-conventions), and the API is meant to be run on `localhost` for a local
-frontend to talk to — not exposed on a public network or shared hosting.
+**The API (`src/api/`) requires magic-link auth, invite-only, since
+Phase 5.** No passwords, no OAuth, no third-party auth service lock-in
+-- see `src/auth/`. Every route scoped by `user_id` checks the
+authenticated session's own id against it
+(`src.auth.dependencies.require_own_user`) and 403s on a mismatch; a
+route is never protected merely because `user_id` appears in its URL.
 
-If a future phase adds multi-household or remote access, authentication
-must be added before the API is reachable from anywhere but localhost.
-Don't assume auth exists just because routes are scoped by `user_id` in
-the URL — that's a routing convenience, not access control.
+Sessions live in an httpOnly cookie (`dalgains_session`), never
+readable by frontend JS. In production the cookie is `Secure` and
+`SameSite=None` (required for the frontend/backend split-domain
+deployment -- see `src/api/routes/auth.py`'s `_cookie_samesite`
+docstring for why this deliberately isn't `Lax` in prod); local dev
+uses `SameSite=Lax` since both run on `localhost` there. CORS
+(`src/api/main.py`) only allows the exact origins in
+`CORS_ALLOWED_ORIGINS` — no wildcard, which browsers refuse to pair
+with credentialed requests anyway. `src/api/security.py` adds HSTS
+(prod only), `X-Content-Type-Options`, `X-Frame-Options: DENY`,
+`Referrer-Policy`, and a restrictive CSP to every response.
+
+`src/config.py` refuses to boot in production without a real
+`JWT_SECRET`, `RESEND_API_KEY`, and a non-default `CORS_ALLOWED_ORIGINS`
+-- see `.env.example` for the full list of what's configurable and
+what production requires.
 
 ## License
 

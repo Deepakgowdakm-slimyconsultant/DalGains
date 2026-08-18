@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.routes import auth, beverages, ingredients, insights, logs, profile, units
 from src.api.routes import recipes as recipes_routes
+from src.api.security import SecurityHeadersMiddleware
 from src.auth import invitation
 from src.config import get_settings
 from src.core.ingredients import load_ingredients
@@ -38,13 +39,27 @@ async def _lifespan(app: FastAPI):
 
 app = FastAPI(title="DalGains API", version=APP_VERSION, lifespan=_lifespan)
 
+# Middleware order: Starlette applies these outermost-added-last, i.e.
+# the *last* app.add_middleware call wraps everything else and runs
+# first on the way in / last on the way out. Security headers are added
+# last so they land on every response, including CORS-rejected ones and
+# framework-level error responses that never reach a route handler.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    # No wildcard: allow_credentials=True means the session cookie can
+    # ride along on a cross-origin request, and browsers refuse to pair
+    # that with allow_origins=["*"] anyway -- this must be the frontend's
+    # exact deployed origin(s), from CORS_ALLOWED_ORIGINS (see
+    # src/config.py; refuses to boot in prod still set to the dev
+    # default). A request from any other origin gets no
+    # Access-Control-Allow-Origin header back, so the browser blocks it
+    # at the CORS preflight before the real request is even sent.
+    allow_origins=get_settings().cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(SecurityHeadersMiddleware)
 
 app.include_router(ingredients.router)
 app.include_router(recipes_routes.router)
