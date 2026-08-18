@@ -1,9 +1,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { renderWithProviders } from "../test/render";
+import { server } from "../test/mocks/server";
+import { mockAdminUser } from "../test/mocks/fixtures";
 import { setCurrentUserId } from "../lib/currentUser";
+import { AuthContext } from "../lib/AuthContext";
 import { Profile } from "./Profile";
+
+const BASE = "http://localhost:8000";
 
 describe("Profile", () => {
   beforeEach(() => setCurrentUserId("test-user"));
@@ -83,5 +89,36 @@ describe("Profile", () => {
 
     expect(screen.queryByText(/This deletes your profile and starts over/)).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Reset all data" })).toBeInTheDocument();
+  });
+
+  it("logs out, clearing the session and navigating to /login", async () => {
+    let logoutCalled = false;
+    server.use(http.post(`${BASE}/auth/logout`, () => {
+      logoutCalled = true;
+      return new HttpResponse(null, { status: 204 });
+    }));
+    const user = userEvent.setup();
+    renderWithProviders(<Profile />);
+    await screen.findByDisplayValue("Asha");
+
+    await user.click(screen.getByRole("button", { name: "Log out" }));
+
+    await waitFor(() => expect(logoutCalled).toBe(true));
+  });
+
+  it("hides the admin link for a non-admin user", async () => {
+    renderWithProviders(<Profile />);
+    await screen.findByDisplayValue("Asha");
+    expect(screen.queryByRole("button", { name: "Invitations" })).not.toBeInTheDocument();
+  });
+
+  it("shows an admin link for an admin user", async () => {
+    renderWithProviders(
+      <AuthContext.Provider value={mockAdminUser}>
+        <Profile />
+      </AuthContext.Provider>
+    );
+    await screen.findByDisplayValue("Asha");
+    expect(screen.getByRole("button", { name: "Invitations" })).toBeInTheDocument();
   });
 });

@@ -7,7 +7,7 @@ import { DhabaButton } from "../components/DhabaButton";
 import { SpiceChip } from "../components/SpiceChip";
 import { KatoriProgressRing } from "../components/KatoriProgressRing";
 import { api } from "../api/client";
-import { setCurrentUserId } from "../lib/currentUser";
+import { getCurrentUserId, setCurrentUserId } from "../lib/currentUser";
 import type { components } from "../api/schema.gen";
 
 type UserProfile = components["schemas"]["UserProfile"];
@@ -141,7 +141,11 @@ export function Onboarding() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [stepIndex, setStepIndex] = useState(0);
-  const [draft, setDraft] = useState<Draft>({ user_id: crypto.randomUUID(), medical_flags: [] });
+  // The authenticated session's own id (App.tsx's AuthGate guarantees
+  // this is populated before Onboarding renders) -- not a client-
+  // generated crypto.randomUUID() like before Phase 5's auth. The
+  // backend rejects a profile whose user_id doesn't match the session.
+  const [draft, setDraft] = useState<Draft>({ user_id: getCurrentUserId()!, medical_flags: [] });
   const [plan, setPlan] = useState<PlanRecommendation | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
