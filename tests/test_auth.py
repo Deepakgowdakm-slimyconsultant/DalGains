@@ -41,6 +41,9 @@ def test_request_link_returns_200_for_invited_email(client, sent_links):
     assert r.status_code == 200
     assert len(sent_links) == 1
     assert sent_links[0][0] == "alice@example.com"
+    # Points at this API's own /auth/verify, not a frontend URL -- that's
+    # the route that actually exists and sets the cookie.
+    assert "/auth/verify?token=" in sent_links[0][1]
 
 
 def test_request_link_returns_200_for_uninvited_email_too(client, sent_links):
