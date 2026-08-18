@@ -22,5 +22,22 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Test files and test tooling are excluded from this config, which is
+  // what `tsc -b` (npm run build, and Vercel's build step) actually
+  // checks -- none of it ships in the vite build bundle, and Vitest
+  // type-checks/runs it through its own esbuild-based pipeline
+  // regardless of this exclusion, so nothing here loses coverage.
+  // Two real, distinct reasons this is needed, not just tidiness:
+  //   - src/test/ (fixtures, MSW handlers, a Node-based i18n loader for
+  //     Vitest) imports node:fs/node:path/node:url, which this config's
+  //     bundler-mode "types": ["vite/client"] doesn't provide
+  //     (deliberately: the real app never touches Node APIs).
+  //   - Every *.test.tsx file calls jest-dom matchers (toBeInTheDocument,
+  //     toBeDisabled, ...) that only exist once @testing-library/jest-dom
+  //     augments Vitest's Assertion type -- vitest.config.ts's setupFiles
+  //     wires that augmentation for the *test run*, but this config never
+  //     loads it, so tsc -b sees a bare, unaugmented Assertion<T> and
+  //     rejects every matcher call as a nonexistent property.
+  "exclude": ["src/test", "**/*.test.ts", "**/*.test.tsx"]
 }
