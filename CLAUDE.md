@@ -34,15 +34,38 @@ scaled by quantity.
 ## Engineering conventions
 
 - Python 3.11+, use Parquet (not CSV) for any table over ~1000 rows.
-- No auth system, no external database server, no cloud dependency until
-  explicitly requested — this is a local-first, family-scale app.
 - Every new module gets a corresponding test in tests/ before being
   considered done.
 - Commit in small, single-purpose chunks with clear messages; do not
   bundle multiple phases into one commit.
 
+## Cloud dependency policy (amended, Phase 5)
+
+The original "no cloud dependency" rule is now scoped to **no cloud
+dependency for data or business logic**: nutrition computation, recipe
+resolution, and the pydantic/SQLAlchemy data layer must keep working
+against a local SQLite file with zero external services. What's
+permitted is deployment infrastructure — hosting, CDN, DNS — chosen
+under a hard constraint of zero payment and no credit card anywhere.
+
+Chosen hosts (do not re-litigate without a stated reason):
+- **Frontend:** Vercel free tier (no card, no sleeping, generous
+  bandwidth).
+- **Backend:** Hugging Face Spaces, Docker SDK, free CPU tier (no
+  card, no sleeping, persistent storage via the Space's `/data`
+  volume or HF Datasets).
+- **Email (magic-link auth):** Resend free tier (no card, 100
+  emails/day).
+- **Uptime monitoring:** UptimeRobot free tier (no card).
+
+Auth is permitted from Phase 5 onward (magic-link, invite-only) since
+the app now has a real deployment target with more than one user
+reachable over the network. This does not relax the local-first data
+rule above — user data still lives in this app's own SQLite file, not
+a third-party data store.
+
 ## Stop conditions
 
-Do not begin Phase 2 (recipe builder), Phase 3 (logging UX), or later
-phases until the project owner explicitly says the current phase is
-approved.
+Do not begin Phase 2 (recipe builder), Phase 3 (logging UX), Phase 5
+(deployment), Phase 6, or later phases until the project owner
+explicitly says the current phase is approved.
