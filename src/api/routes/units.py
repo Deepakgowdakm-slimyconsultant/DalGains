@@ -1,7 +1,8 @@
 """Household-unit calibration routes."""
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
+from src.auth.dependencies import require_own_user
 from src.core.schemas import CalibrationMethod, HouseholdUnit
 from src.core.units import calibrate_unit, get_calibrations
 
@@ -15,10 +16,10 @@ class CalibrateUnitRequest(BaseModel):
 
 
 @router.get("/{user_id}", response_model=dict[str, HouseholdUnit])
-def get_units(user_id: str) -> dict[str, HouseholdUnit]:
+def get_units(user_id: str = Depends(require_own_user)) -> dict[str, HouseholdUnit]:
     return get_calibrations(user_id)
 
 
 @router.post("/{user_id}", response_model=HouseholdUnit, status_code=201)
-def post_unit(user_id: str, request: CalibrateUnitRequest) -> HouseholdUnit:
+def post_unit(request: CalibrateUnitRequest, user_id: str = Depends(require_own_user)) -> HouseholdUnit:
     return calibrate_unit(user_id, request.unit_name, request.volume_ml, request.method)
