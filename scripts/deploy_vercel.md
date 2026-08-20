@@ -34,7 +34,7 @@ Still on the import screen (or later: Project -> **Settings** ->
 
 | Name | Value |
 |---|---|
-| `VITE_API_URL` | Your Hugging Face Space's URL from `deploy_hf_spaces.md` step 8, e.g. `https://your-username-dalgains-api.hf.space` (no trailing slash) |
+| `VITE_API_URL` | Your Render web service's URL from `deploy_render.md` step 5, e.g. `https://dalgains-api.onrender.com` (no trailing slash) |
 
 Apply it to all three environments (Production, Preview, Development)
 unless you specifically want preview deploys hitting a different
