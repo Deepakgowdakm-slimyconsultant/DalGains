@@ -1,23 +1,3 @@
----
-title: DalGains API
-emoji: 🍛
-colorFrom: yellow
-colorTo: red
-sdk: docker
-app_port: 7860
-pinned: false
-license: agpl-3.0
----
-
-<!--
-The YAML block above is Hugging Face Spaces' required metadata format
--- HF parses it to render the Space's info card and knows how to build
-the Docker image (see scripts/deploy_hf_spaces.md). Everything below
-is the actual project README; HF shows it as the Space's description.
-Do not remove the frontmatter or move it away from the very top of
-this file -- HF Spaces requires it to be the first thing in README.md.
--->
-
 # DalGains
 
 Ingredient-first calorie and nutrition tracker for Indian households.
@@ -53,11 +33,23 @@ See [CLAUDE.md](./CLAUDE.md) for full project rules and conventions.
 ## Status
 
 Phase 5 (in progress): zero-cost deployment to Vercel (frontend) and
-Hugging Face Spaces (backend) -- SQLite persistence, magic-link auth,
-production config/CORS/security headers. Phases 1-4 shipped
-household-unit-aware recipe math, meal logging, an insights engine, a
-FastAPI service layer, and the full React/PWA frontend with dark mode
-and accessibility coverage.
+Render (backend) -- SQLite persistence, magic-link auth, production
+config/CORS/security headers. Phases 1-4 shipped household-unit-aware
+recipe math, meal logging, an insights engine, a FastAPI service
+layer, and the full React/PWA frontend with dark mode and
+accessibility coverage.
+
+## Deployment
+
+DalGains supports two parallel deployment paths, both from `main`
+branch, sharing the same backend (`src/`):
+
+- **React + FastAPI edition** (`frontend/` + `src/api/`) -- deploys to
+  Render + Vercel. See `scripts/deploy_render.md` and
+  `scripts/deploy_vercel.md`.
+- **Streamlit edition** (`streamlit_app/`) -- deploys to Streamlit
+  Community Cloud for free with persistent storage. See
+  `scripts/deploy_streamlit.md` (added in a future session).
 
 ## Security posture (current)
 
