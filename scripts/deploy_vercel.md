@@ -1,5 +1,9 @@
 # Deploying the frontend to Vercel
 
+This deploys the React + FastAPI edition. For the parallel Streamlit
+deployment (also free, no data loss), see `deploy_streamlit.md`
+(added in a future session).
+
 Step-by-step, meant to be followed manually. Free tier, no credit
 card, no sleeping, auto-deploys on every push once connected.
 
