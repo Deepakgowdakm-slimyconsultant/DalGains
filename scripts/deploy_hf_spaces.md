@@ -1,5 +1,12 @@
 # Deploying the backend to Hugging Face Spaces
 
+> **DEPRECATED (August 2026)** -- Hugging Face Spaces changed their
+> pricing: Docker Spaces now require a paid PRO plan ($9/mo). This
+> deployment path is no longer viable for a free deployment. For
+> current deployment options see `scripts/deploy_render.md` (React
+> edition) or `scripts/deploy_streamlit.md` (Streamlit edition, added
+> later).
+
 Step-by-step, meant to be followed manually. Free CPU tier, no credit
 card, no sleeping, persistent storage via the Space's own `/data`
 volume, direct `git push` deploys.
