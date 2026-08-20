@@ -7,7 +7,11 @@ import type { paths } from "./schema.gen";
 //   python -m scripts.export_openapi_schema   (from repo root)
 //   npm run generate-api                       (from frontend/)
 export const api = createClient<paths>({
-  baseUrl: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000",
+  baseUrl: import.meta.env.VITE_API_URL ?? "http://localhost:8000",
+  // Required for the session cookie to be sent at all -- the frontend
+  // (Vercel) and backend (HF Spaces) are different origins in
+  // production, so without this every request would go out anonymous.
+  credentials: "include",
   // openapi-fetch defaults to `fetch: globalThis.fetch`, captured once
   // when createClient() runs (module-import time, here). MSW's
   // server.listen() (component tests) patches globalThis.fetch later,

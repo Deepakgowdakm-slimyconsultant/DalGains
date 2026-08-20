@@ -1,8 +1,10 @@
 """Recipe CRUD + nutrition computation routes."""
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
+from src.auth.dependencies import get_current_user
+from src.auth.schemas import User
 from src.core.ingredients import load_ingredients
 from src.core.schemas import NutritionTotals, Recipe
 from src.recipes.builder import (
@@ -34,7 +36,12 @@ def get_recipe(recipe_id: str) -> Recipe:
 
 
 @router.post("", response_model=Recipe, status_code=201)
-def post_recipe(recipe: Recipe) -> Recipe:
+def post_recipe(recipe: Recipe, current_user: User = Depends(get_current_user)) -> Recipe:
+    # Recipes are shared catalog data, not owned by one user -- this only
+    # requires *being* logged in, not an ownership check, but it must
+    # require that much: recipe create/update/delete used to have no
+    # auth at all, which on a publicly reachable deployment would let
+    # any anonymous caller mutate the shared catalog.
     try:
         load_recipe(recipe.recipe_id)
     except FileNotFoundError:
@@ -46,7 +53,7 @@ def post_recipe(recipe: Recipe) -> Recipe:
 
 
 @router.put("/{recipe_id}", response_model=Recipe)
-def put_recipe(recipe_id: str, recipe: Recipe) -> Recipe:
+def put_recipe(recipe_id: str, recipe: Recipe, current_user: User = Depends(get_current_user)) -> Recipe:
     if recipe.recipe_id != recipe_id:
         raise HTTPException(status_code=400, detail="recipe_id in body must match path")
     try:
@@ -58,7 +65,7 @@ def put_recipe(recipe_id: str, recipe: Recipe) -> Recipe:
 
 
 @router.delete("/{recipe_id}", status_code=204, response_class=Response)
-def delete_recipe_route(recipe_id: str) -> None:
+def delete_recipe_route(recipe_id: str, current_user: User = Depends(get_current_user)) -> None:
     try:
         delete_recipe(recipe_id)
     except FileNotFoundError:
@@ -68,7 +75,7 @@ def delete_recipe_route(recipe_id: str) -> None:
 @router.get("/{recipe_id}/nutrition", response_model=NutritionTotals)
 def get_recipe_nutrition(
     recipe_id: str,
-    user_id: Optional[str] = Query(default=None),
+    current_user: User = Depends(get_current_user),
     servings: float = Query(default=1, gt=0),
 ) -> NutritionTotals:
     try:
@@ -78,7 +85,7 @@ def get_recipe_nutrition(
 
     try:
         return compute_nutrition(
-            recipe, servings=servings, ingredients=load_ingredients(), user_id=user_id
+            recipe, servings=servings, ingredients=load_ingredients(), user_id=current_user.id
         )
     except KeyError as exc:
         raise HTTPException(status_code=422, detail=str(exc))

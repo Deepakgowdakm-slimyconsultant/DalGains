@@ -52,6 +52,11 @@ export interface paths {
          *     calibrated units), without writing anything. Lets the frontend show
          *     real nutrition before a log entry is confirmed (CLAUDE.md: AI/derived
          *     estimates must be shown before being logged, never silently accepted).
+         *
+         *     Calibration always comes from the caller's own session, never a
+         *     client-supplied user_id -- that used to be an optional query param,
+         *     which would have let any caller read another user's calibrated
+         *     household-unit sizes through this endpoint.
          */
         get: operations["get_ingredient_nutrition_ingredients__ingredient_id__nutrition_get"];
         put?: never;
@@ -522,6 +527,122 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/request-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Link
+         * @description Always returns 200, whether or not the email is invited -- an
+         *     attacker probing this endpoint learns nothing about who has an
+         *     account or an invitation (no account-enumeration leak).
+         *
+         *     The link points at *this API's own* /auth/verify -- not the
+         *     frontend's URL -- since that's the route that actually exists and
+         *     sets the cookie. request.base_url (not APP_URL) builds it, so this
+         *     works correctly regardless of the API's own deployed domain without
+         *     needing a second env var just to describe it to itself. APP_URL is
+         *     used separately, only for where /auth/verify redirects *to* once
+         *     the cookie is set.
+         */
+        post: operations["request_link_auth_request_link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Verify */
+        get: operations["verify_auth_verify_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logout */
+        post: operations["logout_auth_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Me */
+        get: operations["me_auth_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Invitations */
+        get: operations["list_invitations_admin_invitations_get"];
+        put?: never;
+        /** Create Invitation */
+        post: operations["create_invitation_admin_invitations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/invitations/{email}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke Invitation */
+        delete: operations["revoke_invitation_admin_invitations__email__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -745,6 +866,19 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** HealthResponse */
+        HealthResponse: {
+            /** Status */
+            status: string;
+            /** Ingredient Count */
+            ingredient_count: number;
+            /** Recipe Count */
+            recipe_count: number;
+            /** Version */
+            version: string;
+            /** Admin Contact */
+            admin_contact: string | null;
+        };
         /** HouseholdUnit */
         HouseholdUnit: {
             /** User Id */
@@ -823,6 +957,33 @@ export interface components {
             };
             /** Suggested Actions */
             suggested_actions?: string[];
+        };
+        /** Invitation */
+        Invitation: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Invited By */
+            invited_by: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Accepted At */
+            accepted_at?: string | null;
+            /** Revoked At */
+            revoked_at?: string | null;
+        };
+        /** InviteBody */
+        InviteBody: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
         };
         /** JuiceRequest */
         JuiceRequest: {
@@ -1054,10 +1215,38 @@ export interface components {
              */
             unit: "g" | "ml" | "katori" | "small_katori" | "glass" | "large_glass" | "tsp" | "tbsp" | "mutthi" | "plate" | "piece" | "custom";
         };
+        /** RequestLinkBody */
+        RequestLinkBody: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+        };
         /** TagDayRequest */
         TagDayRequest: {
             /** Tag */
             tag: string;
+        };
+        /** User */
+        User: {
+            /** Id */
+            id: string;
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /**
+             * Is Admin
+             * @default false
+             */
+            is_admin: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** UserProfile */
         UserProfile: {
@@ -1233,13 +1422,14 @@ export interface operations {
             query: {
                 qty: number;
                 unit: string;
-                user_id?: string | null;
             };
             header?: never;
             path: {
                 ingredient_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1301,7 +1491,9 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1367,7 +1559,9 @@ export interface operations {
             path: {
                 recipe_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1402,7 +1596,9 @@ export interface operations {
             path: {
                 recipe_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1427,14 +1623,15 @@ export interface operations {
     get_recipe_nutrition_recipes__recipe_id__nutrition_get: {
         parameters: {
             query?: {
-                user_id?: string | null;
                 servings?: number;
             };
             header?: never;
             path: {
                 recipe_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1729,7 +1926,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1760,7 +1959,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1795,7 +1996,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1822,7 +2025,9 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1857,7 +2062,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1888,7 +2095,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1921,7 +2130,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1956,7 +2167,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1989,7 +2202,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -2024,7 +2239,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -2057,10 +2274,12 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                user_id: string;
                 date: string;
+                user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2089,10 +2308,12 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                user_id: string;
                 date: string;
+                user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -2127,7 +2348,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2156,11 +2379,13 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                user_id: string;
                 start: string;
                 end: string;
+                user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2189,11 +2414,13 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                user_id: string;
                 start: string;
                 end: string;
+                user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2222,10 +2449,12 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                user_id: string;
                 week_ending: string;
+                user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2254,11 +2483,13 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                user_id: string;
                 log_id: string;
                 index: number;
+                user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2291,7 +2522,9 @@ export interface operations {
             path: {
                 user_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2302,6 +2535,220 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Insight"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_link_auth_request_link_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestLinkBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_auth_verify_get: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout_auth_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invitations_admin_invitations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_invitation_admin_invitations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                dalgains_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InviteBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_invitation_admin_invitations__email__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                email: string;
+            };
+            cookie?: {
+                dalgains_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
                 };
             };
             /** @description Validation Error */
@@ -2330,9 +2777,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
+                    "application/json": components["schemas"]["HealthResponse"];
                 };
             };
         };

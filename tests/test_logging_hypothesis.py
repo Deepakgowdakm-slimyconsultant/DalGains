@@ -6,9 +6,6 @@ import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-import src.core.profiles as profiles
-import src.core.units as units
-import src.logging.store as store
 from src.core.ingredients import load_ingredients
 from src.logging import engine
 from src.logging.aggregation import weekly_totals
@@ -18,13 +15,6 @@ INGREDIENT_IDS = list(INGREDIENTS.keys())
 
 _ingredient_id = st.sampled_from(INGREDIENT_IDS)
 _qty = st.floats(min_value=0.1, max_value=500, allow_nan=False)
-
-
-@pytest.fixture(autouse=True)
-def isolated_dirs(tmp_path, monkeypatch):
-    monkeypatch.setattr(store, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(profiles, "USERS_DIR", tmp_path / "users")
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
 
 
 def _fresh_user_id() -> str:

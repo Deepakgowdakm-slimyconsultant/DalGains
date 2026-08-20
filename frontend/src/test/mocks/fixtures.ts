@@ -2,6 +2,20 @@
 // the real backend schemas (src/core/schemas.py), not hand-waved stubs.
 import type { components } from "../../api/schema.gen";
 
+export const mockUser: components["schemas"]["User"] = {
+  id: "test-user",
+  email: "test-user@example.com",
+  is_admin: false,
+  created_at: "2026-01-01T00:00:00Z",
+};
+
+export const mockAdminUser: components["schemas"]["User"] = {
+  id: "admin-user",
+  email: "admin@example.com",
+  is_admin: true,
+  created_at: "2026-01-01T00:00:00Z",
+};
+
 export const mockProfile: components["schemas"]["UserProfile"] = {
   user_id: "test-user",
   name: "Asha",

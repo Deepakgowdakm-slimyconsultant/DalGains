@@ -5,6 +5,8 @@ import { SignboardHeader } from "../components/SignboardHeader";
 import { SpiceChip } from "../components/SpiceChip";
 import { DhabaButton } from "../components/DhabaButton";
 import { api } from "../api/client";
+import { logout } from "../lib/auth";
+import { useCurrentUser } from "../lib/AuthContext";
 import { clearCurrentUserId, getCurrentUserId } from "../lib/currentUser";
 import type { components } from "../api/schema.gen";
 import type { Locale } from "../i18n";
@@ -51,6 +53,7 @@ function ToggleRow({ label, on, onToggle }: { label: string; on: boolean; onTogg
 export function Profile() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const currentUser = useCurrentUser();
   const userId = getCurrentUserId()!;
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [units, setUnits] = useState<Record<string, HouseholdUnit>>({});
@@ -120,6 +123,12 @@ export function Profile() {
     clearCurrentUserId();
     localStorage.removeItem("dalgains_dismissed_insights");
     navigate("/onboarding");
+  }
+
+  async function handleLogout() {
+    await logout();
+    clearCurrentUserId();
+    navigate("/login");
   }
 
   if (!profile) {
@@ -233,11 +242,37 @@ export function Profile() {
         </div>
       </section>
 
+      {currentUser?.is_admin && (
+        <section>
+          <SectionHeading>{t("profile.admin")}</SectionHeading>
+          <DhabaButton variant="secondary" onClick={() => navigate("/admin")} className="w-full">
+            {t("admin.title")}
+          </DhabaButton>
+        </section>
+      )}
+
+      <section>
+        <DhabaButton variant="secondary" onClick={handleLogout} className="w-full">
+          {t("profile.log_out")}
+        </DhabaButton>
+      </section>
+
       <section>
         <SectionHeading>{t("profile.about")}</SectionHeading>
         <div className="rounded-md bg-surface_primary p-md text-caption text-ink_body/80">
           <p>{t("profile.license_notice")}</p>
           <p className="mt-sm font-semibold">{t("profile.medical_disclaimer")}</p>
+        </div>
+        <div className="mt-sm flex flex-col gap-xs">
+          <DhabaButton variant="secondary" onClick={() => navigate("/about")} className="w-full">
+            {t("about.title")}
+          </DhabaButton>
+          <DhabaButton variant="secondary" onClick={() => navigate("/terms")} className="w-full">
+            {t("terms.title")}
+          </DhabaButton>
+          <DhabaButton variant="secondary" onClick={() => navigate("/privacy")} className="w-full">
+            {t("privacy.title")}
+          </DhabaButton>
         </div>
       </section>
     </div>

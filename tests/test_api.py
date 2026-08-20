@@ -4,10 +4,6 @@ import shutil
 import pytest
 from fastapi.testclient import TestClient
 
-import src.core.profiles as profiles
-import src.core.units as units
-import src.core.weight_log as weight_log
-import src.logging.store as store
 import src.recipes.builder as builder
 
 REAL_RECIPES_DIR = builder.RECIPES_DIR
@@ -15,11 +11,6 @@ REAL_RECIPES_DIR = builder.RECIPES_DIR
 
 @pytest.fixture(autouse=True)
 def isolated_data_dirs(tmp_path, monkeypatch):
-    monkeypatch.setattr(store, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(profiles, "USERS_DIR", tmp_path / "users")
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
-    monkeypatch.setattr(weight_log, "USERS_DIR", tmp_path / "users")
-
     # Copy the real seeded recipes into the isolated dir so read tests
     # (get_recipe, nutrition, ...) see realistic data, while writes
     # (create/update/delete) stay isolated from the real data/recipes/.
@@ -28,11 +19,34 @@ def isolated_data_dirs(tmp_path, monkeypatch):
     monkeypatch.setattr(builder, "RECIPES_DIR", isolated_recipes)
 
 
+def _authenticated_client(user_id: str, email: str) -> TestClient:
+    """A TestClient logged in as a real user, bypassing the email round
+    trip -- src/auth/store.py creates the User row directly and the
+    session cookie is set the same way src/api/routes/auth.py's
+    /auth/verify route sets it for a real browser. Auth's own request/
+    verify/logout flow is covered separately in tests/test_auth.py."""
+    from src.api.main import app
+    from src.auth import store
+    from src.auth.jwt import SESSION_COOKIE_NAME, create_session_token
+
+    if store.get_user_by_id(user_id) is None:
+        store.create_user(user_id, email)
+    client = TestClient(app)
+    client.cookies.set(SESSION_COOKIE_NAME, create_session_token(user_id))
+    return client
+
+
 @pytest.fixture
 def client():
-    from src.api.main import app
+    return _authenticated_client("apitest", "apitest@example.com")
 
-    return TestClient(app)
+
+@pytest.fixture
+def other_client():
+    """A second authenticated user -- for tests that need two distinct
+    real sessions (e.g. a calibration one user set shouldn't leak into
+    another's preview)."""
+    return _authenticated_client("otheruser", "other@example.com")
 
 
 def _profile_payload(user_id="apitest"):
@@ -117,15 +131,17 @@ def test_get_ingredient_nutrition_katori_matches_default_calibration(client):
     assert katori == grams
 
 
-def test_get_ingredient_nutrition_honors_user_calibration(client):
-    client.post(
-        "/units/alice", json={"unit_name": "katori", "volume_ml": 200, "method": "measured"}
+def test_get_ingredient_nutrition_honors_user_calibration(client, other_client):
+    # Calibration always comes from the caller's own session (see
+    # src/api/routes/ingredients.py) -- calibrate as "otheruser", then
+    # confirm otheruser's own preview reflects it while apitest's default
+    # preview (uncalibrated) doesn't.
+    other_client.post(
+        "/units/otheruser", json={"unit_name": "katori", "volume_ml": 200, "method": "measured"}
     )
     default = client.get("/ingredients/B021/nutrition", params={"qty": 1, "unit": "katori"}).json()
-    alice = client.get(
-        "/ingredients/B021/nutrition", params={"qty": 1, "unit": "katori", "user_id": "alice"}
-    ).json()
-    assert alice["energy_kcal"] > default["energy_kcal"]
+    calibrated = other_client.get("/ingredients/B021/nutrition", params={"qty": 1, "unit": "katori"}).json()
+    assert calibrated["energy_kcal"] > default["energy_kcal"]
 
 
 def test_get_ingredient_nutrition_missing_ingredient_returns_404(client):
@@ -361,7 +377,7 @@ def test_get_profile(client):
 
 
 def test_get_profile_missing_returns_404(client):
-    r = client.get("/profile/nobody")
+    r = client.get("/profile/apitest")
     assert r.status_code == 404
 
 
@@ -381,7 +397,7 @@ def test_put_profile_mismatched_id_returns_400(client):
 
 
 def test_put_profile_missing_returns_404(client):
-    r = client.put("/profile/nobody", json=_profile_payload(user_id="nobody"))
+    r = client.put("/profile/apitest", json=_profile_payload(user_id="apitest"))
     assert r.status_code == 404
 
 
@@ -393,7 +409,7 @@ def test_delete_profile(client):
 
 
 def test_delete_profile_missing_returns_404(client):
-    r = client.delete("/profile/nobody")
+    r = client.delete("/profile/apitest")
     assert r.status_code == 404
 
 
@@ -405,7 +421,7 @@ def test_get_plan(client):
 
 
 def test_get_plan_missing_profile_returns_404(client):
-    r = client.get("/profile/nobody/plan")
+    r = client.get("/profile/apitest/plan")
     assert r.status_code == 404
 
 
@@ -526,7 +542,7 @@ def test_get_category_breakdown_invalid_date_returns_422(client):
 
 
 def test_get_category_breakdown_empty_for_new_user(client):
-    r = client.get("/logs/nobody-yet/category_breakdown/2026-01-01/2026-01-07")
+    r = client.get("/logs/apitest/category_breakdown/2026-01-01/2026-01-07")
     assert r.status_code == 200
     assert r.json() == {"by_category": {}, "beverage_kcal_by_date": {}, "total_kcal_by_date": {}}
 
@@ -560,7 +576,7 @@ def test_get_logged_dates(client):
 
 
 def test_get_logged_dates_empty_for_new_user(client):
-    r = client.get("/logs/nobody-yet/dates")
+    r = client.get("/logs/apitest/dates")
     assert r.status_code == 200
     assert r.json() == []
 
@@ -576,7 +592,7 @@ def test_get_log_range(client):
 
 
 def test_get_log_range_skips_missing_days(client):
-    r = client.get("/logs/nobody-yet/range/2020-01-01/2020-01-07")
+    r = client.get("/logs/apitest/range/2020-01-01/2020-01-07")
     assert r.status_code == 200
     assert r.json() == []
 
@@ -603,13 +619,24 @@ def test_get_log_week_invalid_date_returns_422(client):
 
 def test_post_log_entry_on_quarantined_day_returns_409(client):
     # No timestamp in the request body -> defaults to "now", so the
-    # quarantined file has to be today's, not a fixed date.
-    import src.logging.store as store
-    from datetime import date
+    # quarantined row has to be today's, not a fixed date.
+    from datetime import date, datetime, timezone
 
-    path = store._log_path("apitest", date.today().isoformat())
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("{corrupt")
+    from src.db.models import MealLogRow
+    from src.db.session import get_session
+
+    with get_session() as session:
+        session.add(
+            MealLogRow(
+                user_id="apitest",
+                log_id=date.today().isoformat(),
+                timestamp=datetime.now(timezone.utc),
+                entries=[],
+                computed_totals={"energy_kcal": 0, "protein_g": 0, "fat_g": 0, "carbs_g": 0, "fiber_g": 0},
+                notes=None,
+                tags=[],
+            )
+        )
     r = client.post("/logs/apitest/entries", json={"ingredient_id": "B021", "qty": 100, "unit": "g"})
     assert r.status_code == 409
 
@@ -641,7 +668,7 @@ def test_delete_log_entry_out_of_range_returns_400(client):
 
 
 def test_get_insights_for_user_with_no_data(client):
-    r = client.get("/insights/nobody")
+    r = client.get("/insights/apitest")
     assert r.status_code == 200
     assert r.json() == []
 

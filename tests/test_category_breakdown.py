@@ -7,9 +7,6 @@ from datetime import datetime, timezone
 
 import pytest
 
-import src.core.profiles as profiles
-import src.core.units as units
-import src.logging.store as store
 import src.recipes.builder as builder
 from src.core.ingredients import load_ingredients
 from src.core.schemas import OilGhee, Recipe, RecipeIngredient
@@ -20,9 +17,6 @@ from src.recipes.builder import OIL_GHEE_PROFILES, create_recipe
 
 @pytest.fixture(autouse=True)
 def isolated_data_dirs(tmp_path, monkeypatch):
-    monkeypatch.setattr(store, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(profiles, "USERS_DIR", tmp_path / "users")
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
     monkeypatch.setattr(builder, "RECIPES_DIR", tmp_path / "recipes")
 
 

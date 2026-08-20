@@ -23,16 +23,15 @@ def test_convert_to_grams_is_proportional_to_volume(ingredient, volume_ml):
 
 
 @given(
-    # Unique per example so examples never collide on disk -- each example
-    # is still a self-contained calibrate-then-read within one call.
+    # Unique per example so examples never collide in the DB -- each
+    # example is still a self-contained calibrate-then-read within one call.
     user_id=st.uuids().map(str),
     unit_name=st.uuids().map(str),
     volume_ml=st.floats(min_value=0.01, max_value=5000, allow_nan=False),
     method=st.sampled_from(["photo_reference", "measured", "estimated"]),
 )
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
-def test_calibrate_then_resolve_roundtrips(user_id, unit_name, volume_ml, method, tmp_path, monkeypatch):
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
+def test_calibrate_then_resolve_roundtrips(user_id, unit_name, volume_ml, method):
     units.calibrate_unit(user_id, unit_name, volume_ml=volume_ml, method=method)
     value, source = units.resolve_unit(user_id, unit_name)
     assert value == pytest.approx(volume_ml)

@@ -10,9 +10,6 @@ from fastapi.testclient import TestClient
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-import src.core.profiles as profiles
-import src.core.units as units
-import src.logging.store as store
 import src.recipes.builder as builder
 
 REAL_RECIPES_DIR = builder.RECIPES_DIR
@@ -52,9 +49,6 @@ POST_ENDPOINTS = [
 
 @pytest.fixture(autouse=True)
 def isolated_data_dirs(tmp_path, monkeypatch):
-    monkeypatch.setattr(store, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(profiles, "USERS_DIR", tmp_path / "users")
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
     isolated_recipes = tmp_path / "recipes"
     shutil.copytree(REAL_RECIPES_DIR, isolated_recipes)
     monkeypatch.setattr(builder, "RECIPES_DIR", isolated_recipes)

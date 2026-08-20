@@ -9,6 +9,8 @@ import {
   mockUnits,
   mockCategoryBreakdown,
   mockWeeklySummary,
+  mockUser,
+  mockAdminUser,
 } from "./fixtures";
 
 const BASE = "http://localhost:8000";
@@ -17,7 +19,43 @@ const BASE = "http://localhost:8000";
 // component tests exercise real request/response shapes (via MSW),
 // never a hand-rolled fetch mock, so a schema drift between frontend
 // and backend shows up as a broken test, not silently.
+//
+// Default auth state is "logged in as mockUser" -- most component
+// tests exercise a screen inside the authenticated app, not the login
+// flow itself, so that's the useful default. Tests that need a
+// different auth state (unauthenticated, no profile yet, admin)
+// override with server.use(...) -- see App.test.tsx and Login.test.tsx.
 export const handlers = [
+  http.get(`${BASE}/health`, () =>
+    HttpResponse.json({
+      status: "ok",
+      ingredient_count: 1,
+      recipe_count: 1,
+      version: "test",
+      admin_contact: mockAdminUser.email,
+    })
+  ),
+  http.get(`${BASE}/auth/me`, () => HttpResponse.json(mockUser)),
+  http.post(`${BASE}/auth/request-link`, () => HttpResponse.json({ detail: "sent" })),
+  http.post(`${BASE}/auth/logout`, () => new HttpResponse(null, { status: 204 })),
+  http.get(`${BASE}/admin/invitations`, () => HttpResponse.json([])),
+  http.post(`${BASE}/admin/invitations`, async ({ request }) => {
+    const body = (await request.json()) as { email: string };
+    return HttpResponse.json(
+      { email: body.email, invited_by: mockUser.email, created_at: new Date().toISOString(), accepted_at: null, revoked_at: null },
+      { status: 201 }
+    );
+  }),
+  http.delete(`${BASE}/admin/invitations/:email`, ({ params }) =>
+    HttpResponse.json({
+      email: params.email,
+      invited_by: mockUser.email,
+      created_at: new Date().toISOString(),
+      accepted_at: null,
+      revoked_at: new Date().toISOString(),
+    })
+  ),
+
   http.get(`${BASE}/profile/:userId`, () => HttpResponse.json(mockProfile)),
   http.post(`${BASE}/profile`, async ({ request }) => HttpResponse.json(await request.json(), { status: 201 })),
   http.put(`${BASE}/profile/:userId`, async ({ request }) => HttpResponse.json(await request.json())),

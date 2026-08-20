@@ -4,13 +4,6 @@ from src.core.schemas import WeightEntry
 from src.core.weight_log import get_weight_log, save_weight
 
 
-@pytest.fixture(autouse=True)
-def isolated_users_dir(tmp_path, monkeypatch):
-    import src.core.weight_log as weight_log
-
-    monkeypatch.setattr(weight_log, "USERS_DIR", tmp_path / "users")
-
-
 def test_get_weight_log_empty_for_new_user():
     assert get_weight_log("alice") == {}
 

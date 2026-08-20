@@ -3,20 +3,32 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 import src.core.profiles as profiles
-import src.core.units as units
 import src.logging.store as store
 import src.recipes.builder as builder
 from src.core.schemas import LogEntry, UserProfile
+from src.db.models import MealLogRow
+from src.db.session import get_session
 from src.logging import engine
 from src.logging.aggregation import daily_totals, streak, target_adherence, weekly_totals
 from src.logging.fasting_integration import is_within_eating_window
 
+_VALID_TOTALS = {"energy_kcal": 0, "protein_g": 0, "fat_g": 0, "carbs_g": 0, "fiber_g": 0}
 
-@pytest.fixture(autouse=True)
-def isolated_data_dirs(tmp_path, monkeypatch):
-    monkeypatch.setattr(store, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(profiles, "USERS_DIR", tmp_path / "users")
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
+
+def _write_invalid_row(user_id: str, date: str, *, entries=None, computed_totals=None) -> None:
+    """Simulates a corrupted persisted row -- see test_persistence_corruption.py."""
+    with get_session() as session:
+        session.add(
+            MealLogRow(
+                user_id=user_id,
+                log_id=date,
+                timestamp=datetime.now(timezone.utc),
+                entries=entries if entries is not None else [],
+                computed_totals=computed_totals if computed_totals is not None else _VALID_TOTALS,
+                notes=None,
+                tags=[],
+            )
+        )
 
 
 def _profile(**overrides):
@@ -48,20 +60,18 @@ def test_load_day_returns_none_for_missing_file():
     assert store.load_day("alice", "2026-01-01") is None
 
 
-def test_load_day_quarantines_malformed_json():
-    path = store._log_path("alice", "2026-01-01")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("{not valid json")
+def test_load_day_quarantines_a_row_with_no_entries():
+    _write_invalid_row("alice", "2026-01-01", entries=[])
 
     result = store.load_day("alice", "2026-01-01")
     assert result.__class__.__name__ == "QuarantinedLog"
-    assert "not valid json" in result.raw_content
+    assert "alice" in result.raw_content
 
 
-def test_load_day_quarantines_schema_invalid_json():
-    path = store._log_path("alice", "2026-01-01")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text('{"log_id": "2026-01-01", "user_id": "alice"}')
+def test_load_day_quarantines_schema_invalid_row():
+    _write_invalid_row(
+        "alice", "2026-01-01", entries=[{"recipe_id": "x", "qty": 1, "unit": "serving"}], computed_totals={}
+    )
 
     result = store.load_day("alice", "2026-01-01")
     assert result.__class__.__name__ == "QuarantinedLog"
@@ -138,17 +148,13 @@ def test_delete_entry_out_of_range_raises():
 
 
 def test_delete_entry_on_quarantined_day_raises():
-    path = store._log_path("alice", "2026-01-01")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("{not valid json")
+    _write_invalid_row("alice", "2026-01-01", entries=[])
     with pytest.raises(ValueError):
         engine.delete_entry("alice", "2026-01-01", 0)
 
 
 def test_log_entry_on_quarantined_day_raises():
-    path = store._log_path("alice", "2026-01-01")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("{not valid json")
+    _write_invalid_row("alice", "2026-01-01", entries=[])
     with pytest.raises(ValueError):
         engine.log_ingredient("alice", "B021", 100, "g", when=_dt("2026-01-01"))
 

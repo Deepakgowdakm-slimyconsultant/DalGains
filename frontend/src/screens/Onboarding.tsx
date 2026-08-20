@@ -1,13 +1,14 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { SignboardHeader } from "../components/SignboardHeader";
 import { DhabaButton } from "../components/DhabaButton";
 import { SpiceChip } from "../components/SpiceChip";
 import { KatoriProgressRing } from "../components/KatoriProgressRing";
+import { Footer } from "../components/Footer";
 import { api } from "../api/client";
-import { setCurrentUserId } from "../lib/currentUser";
+import { getCurrentUserId, setCurrentUserId } from "../lib/currentUser";
 import type { components } from "../api/schema.gen";
 
 type UserProfile = components["schemas"]["UserProfile"];
@@ -77,6 +78,7 @@ function Step({
           </DhabaButton>
         </div>
       </div>
+      <Footer />
     </main>
   );
 }
@@ -124,6 +126,7 @@ function NumberField({ value, onChange, placeholder }: { value: number | undefin
 }
 
 const STEPS = [
+  "consent",
   "name",
   "age",
   "sex",
@@ -141,10 +144,15 @@ export function Onboarding() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [stepIndex, setStepIndex] = useState(0);
-  const [draft, setDraft] = useState<Draft>({ user_id: crypto.randomUUID(), medical_flags: [] });
+  // The authenticated session's own id (App.tsx's AuthGate guarantees
+  // this is populated before Onboarding renders) -- not a client-
+  // generated crypto.randomUUID() like before Phase 5's auth. The
+  // backend rejects a profile whose user_id doesn't match the session.
+  const [draft, setDraft] = useState<Draft>({ user_id: getCurrentUserId()!, medical_flags: [] });
   const [plan, setPlan] = useState<PlanRecommendation | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [consented, setConsented] = useState(false);
 
   const step = STEPS[stepIndex];
   const goNext = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1));
@@ -175,6 +183,35 @@ export function Onboarding() {
   }
 
   switch (step) {
+    case "consent":
+      return (
+        <Step
+          title={t("onboarding.consent_title")}
+          onContinue={goNext}
+          continueLabel={t("common.confirm")}
+          continueDisabled={!consented}
+        >
+          <label className="flex min-h-tap-primary items-start gap-sm rounded-md bg-surface_card p-md text-body text-ink_body">
+            <input
+              type="checkbox"
+              checked={consented}
+              onChange={(e) => setConsented(e.target.checked)}
+              className="mt-1 h-6 w-6 shrink-0"
+            />
+            <span>
+              {t("onboarding.consent_agree_prefix")}{" "}
+              <Link to="/terms" target="_blank" className="underline">
+                {t("onboarding.consent_terms_link")}
+              </Link>{" "}
+              {t("onboarding.consent_and")}{" "}
+              <Link to="/privacy" target="_blank" className="underline">
+                {t("onboarding.consent_privacy_link")}
+              </Link>
+              .
+            </span>
+          </label>
+        </Step>
+      );
     case "name":
       return (
         <Step title={t("onboarding.name_title")} onContinue={goNext} continueLabel={t("common.confirm")} continueDisabled={!draft.name}>

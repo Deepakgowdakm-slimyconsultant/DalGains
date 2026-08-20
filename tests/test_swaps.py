@@ -2,10 +2,9 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-import src.core.profiles as profiles
-import src.core.units as units
-import src.logging.store as store
 from src.core.ingredients import load_ingredients
+from src.db.models import MealLogRow
+from src.db.session import get_session
 from src.insights.swaps import (
     MIN_LOGGED_FOR_PERSONAL_SWAPS,
     _protein_per_serving,
@@ -13,13 +12,6 @@ from src.insights.swaps import (
     suggest_protein_swaps,
 )
 from src.logging import engine
-
-
-@pytest.fixture(autouse=True)
-def isolated_data_dirs(tmp_path, monkeypatch):
-    monkeypatch.setattr(store, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(profiles, "USERS_DIR", tmp_path / "users")
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
 
 
 @pytest.fixture(scope="module")
@@ -55,8 +47,18 @@ def test_recent_unique_food_refs_deduplicates_and_ignores_quarantined_days():
     engine.log_ingredient("alice", "B021", 50, "g", when=when + timedelta(hours=1))  # dup ref
     engine.log_ingredient("alice", "T013", 10, "g", when=when + timedelta(days=1))
 
-    corrupt_path = store._log_path("alice", "2026-01-17")
-    corrupt_path.write_text("{corrupt")
+    with get_session() as session:
+        session.add(
+            MealLogRow(
+                user_id="alice",
+                log_id="2026-01-17",
+                timestamp=datetime(2026, 1, 17, tzinfo=timezone.utc),
+                entries=[],  # violates MealLog's >=1 entry rule -> quarantines on read
+                computed_totals={"energy_kcal": 0, "protein_g": 0, "fat_g": 0, "carbs_g": 0, "fiber_g": 0},
+                notes=None,
+                tags=[],
+            )
+        )
 
     refs = _recent_unique_food_refs("alice", "2026-01-17")
     assert refs.count(("ingredient", "B021")) == 1

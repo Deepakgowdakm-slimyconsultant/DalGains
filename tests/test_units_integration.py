@@ -16,13 +16,6 @@ def ingredients():
     return load_ingredients()
 
 
-@pytest.fixture(autouse=True)
-def isolated_users_dir(tmp_path, monkeypatch):
-    import src.core.units as units
-
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
-
-
 def _recipe(ingredient_id: str, qty: float, unit: str) -> Recipe:
     return Recipe(
         recipe_id="hyp",

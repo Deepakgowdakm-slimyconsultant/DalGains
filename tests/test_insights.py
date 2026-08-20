@@ -8,8 +8,6 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 import src.core.profiles as profiles
-import src.core.units as units
-import src.logging.store as store
 import src.recipes.builder as builder
 from src.core.schemas import LogEntry, MealLog, NutritionTotals, UserProfile
 from src.insights import engine as insights_engine
@@ -29,9 +27,6 @@ from src.logging import engine as log_engine
 
 @pytest.fixture(autouse=True)
 def isolated_data_dirs(tmp_path, monkeypatch):
-    monkeypatch.setattr(store, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(profiles, "USERS_DIR", tmp_path / "users")
-    monkeypatch.setattr(units, "USERS_DIR", tmp_path / "users")
     monkeypatch.setattr(builder, "RECIPES_DIR", tmp_path / "recipes_unused")
 
 
